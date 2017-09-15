@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                http://www.springframework.org/schema/util 
+            http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+	<!-- 개발 설정 // -->
+	<beans profile="devlocal">
+		<util:properties id="config" location="classpath:config/devlocal-config.xml"/>
+	</beans>
+	<!-- // 개발 설정 -->
+	<!-- 테스트 서버 설정 // -->
+	<beans profile="development">
+		<util:properties id="config" location="classpath:config/development-config.xml"/>
+	</beans>
+	<!-- // 테스트 서버 설정 -->
+	<!-- 운영 서버 설정 // -->
+	<beans profile="production">
+		<util:properties id="config" location="classpath:config/production-config.xml"/>
+	</beans>
+	<!-- // 운영 서버 설정 -->
+
+</beans>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<settings>
+		<setting name="cacheEnabled" value="false"/>
+		<setting name="defaultStatementTimeout" value="60"/>
+		<setting name="jdbcTypeForNull" value="VARCHAR"/>
+
+<!-- 		<setting name="lazyLoadingEnabled" value="true"/> -->
+<!-- 		<setting name="multipleResultSetsEnabled" value="true"/> -->
+<!-- 		<setting name="useColumnLabel" value="true"/> -->
+<!-- 		<setting name="useGeneratedKeys" value="false"/> -->
+<!-- 		<setting name="autoMappingBehavior" value="PARTIAL"/> -->
+<!-- 		<setting name="defaultExecutorType" value="SIMPLE"/> -->
+<!-- 		<setting name="defaultExecutorType" value="BATCH"/> --> <!-- 배치처리시 이용. -->
+<!-- 		<setting name="safeRowBoundsEnabled" value="false"/> -->
+<!-- 		<setting name="mapUnderscoreToCamelCase" value="false"/> -->
+<!-- 		<setting name="localCacheScope" value="SESSION"/> -->
+<!-- 		<setting name="jdbcTypeForNull" value="OTHER"/> -->
+<!-- 		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/> -->
+
+	</settings>
+	
+	<typeAliases>
+		<package name="kr.pe.frame"/>
+	</typeAliases>
+
+	<typeHandlers>
+		<typeHandler javaType="java.sql.Timestamp" handler="org.apache.ibatis.type.StringTypeHandler"/>
+		<typeHandler javaType="java.lang.String" handler="kr.pe.frame.cmm.core.handler.NStringTypeHandler" jdbcType="NVARCHAR" />
+	</typeHandlers>
+
+    <plugins>
+        <plugin interceptor="kr.pe.frame.cmm.core.base.AddCommToParamInterceptor"/>
+        <plugin interceptor="kr.pe.frame.cmm.core.base.GridPagingInterceptor" />
+    </plugins>
+</configuration>
