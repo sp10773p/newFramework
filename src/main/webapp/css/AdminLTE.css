@@ -1738,6 +1738,12 @@ a:focus {
   margin: 0;
   line-height: 1;
 }
+.box-search {
+  display: inline-block;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1;
+}
 .box-header > .fa,
 .box-header > .glyphicon,
 .box-header > .ion {
