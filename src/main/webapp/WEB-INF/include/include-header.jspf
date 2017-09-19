@@ -3,6 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="attr" uri="/WEB-INF/tlds/attr" %>
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -16,20 +18,20 @@
 <link rel="stylesheet" href="css/font-awesome/font-awesome.css">
 <!-- Ionicons -->
 <link rel="stylesheet" href="css/Ionicons/ionicons.css">
-<!-- daterange picker -->
-<link rel="stylesheet" href="css/bootstrap/daterangepicker.css">
-<!-- bootstrap datepicker -->
-<link rel="stylesheet" href="css/bootstrap/bootstrap-datepicker.css">
 <!-- DataTables -->
 <link rel="stylesheet" href="css/datatables/dataTables.bootstrap.css">
 <!-- Theme style -->
-<link rel="stylesheet" href="css/AdminLTE.css">
+<link rel="stylesheet" href="css/adminlte.css">
 
 <link rel="stylesheet" href="css/grid.css">
 <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
 page. However, you can choose any other skin. Make sure you
 apply the skin class to the body tag so the changes take effect. -->
 <link rel="stylesheet" href="css/skins/skin-blue.css">
+
+<%-- Calendar Style--%>
+<link rel="stylesheet" href="css/calendar.css">
+<link rel="stylesheet" href="css/style.css">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -44,25 +46,23 @@ apply the skin class to the body tag so the changes take effect. -->
 <!-- REQUIRED JS SCRIPTS -->
 <!-- jQuery 3 -->
 <script src="js/jquery/jquery.js"></script>
+<script src="js/jquery/jquery-ui.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="js/bootstrap/bootstrap.js"></script>
 <!-- AdminLTE App -->
 <script src="js/adminlte.js"></script>
-<!-- date-range-picker -->
-<script src="js/bootstrap/moment.min.js"></script>
-<script src="js/bootstrap/daterangepicker.js"></script>
-<!-- bootstrap datepicker -->
-<script src="js/bootstrap/bootstrap-datepicker.js"></script>
 <!-- DataTables -->
 <%--<script src="js/datatables/jquery.dataTables.js"></script>
 <script src="js/datatables/dataTables.bootstrap.js"></script>--%>
-<script src="js/grid.js"></script>
 <!-- SlimScroll -->
 <script src="js/jquery/jquery.slimscroll.js"></script>
 <!-- FastClick -->
 <script src="js/fastclick.js"></script>
 
+<%-- developer Add Scripts--%>
+<script src="js/grid.js"></script>
 <script src="js/common.js"></script>
+<script src="js/dateutil.js"></script>
 
 <!--
 BODY TAG OPTIONS:
@@ -86,6 +86,7 @@ desired effect
 -->
 <script>
     $(function(){
+        $.comm.initCalendar();  // 날짜필드 datepicker setting
 
     })
 </script>

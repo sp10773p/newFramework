@@ -144,6 +144,10 @@ body {
   margin-left: auto;
   padding-left: 15px;
   padding-right: 15px;
+  font-family: "돋움", Dotum, Arial, sans-serif;
+  font-style : normal;
+  font-size : 12px;
+  color:#555;
 }
 /* H1 - H6 font */
 h1,
@@ -1232,10 +1236,13 @@ a:focus {
  * Component: Form
  * ---------------
  */
-.form-control {
-  border-radius: 0;
+/*.form-control {
+  border-radius: 3px;
   box-shadow: none;
   border-color: #d2d6de;
+  height : 30px;
+  font-size : 12px;
+  padding : 0px 5px 0px 5px;
 }
 .form-control:focus {
   border-color: #3c8dbc;
@@ -1251,7 +1258,38 @@ a:focus {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}*/
+
+
+
+.form-group select,input {
+  border : 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: none;
+  height : 30px;
+  font-size : 12px;
+  padding : 0px 5px 0px 5px;
+  width: 100%;
 }
+.form-group select:focus,input:focus {
+  border-color: #3c8dbc;
+  box-shadow: none;
+}
+.form-group select::-moz-placeholder,input::-moz-placeholder,
+.form-group select:-ms-input-placeholder,input:-ms-input-placeholder,
+.form-group select::-webkit-input-placeholder,input::-webkit-input-placeholder {
+  color: #bbb;
+  opacity: 1;
+}
+.form-group select:not(select){
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+
+
+
 .form-group.has-success label {
   color: #00a65a;
 }
@@ -1766,7 +1804,7 @@ a:focus {
 }
 .btn-box-tool {
   padding: 5px;
-  font-size: 12px;
+  font-size: 15px;
   background: transparent;
   color: #97a0b3;
 }

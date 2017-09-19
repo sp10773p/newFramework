@@ -13,7 +13,6 @@
     <script>
         $(function () {
             //Date range picker
-            var dateObj = $('#REG_DTM').daterangepicker();
             var headers = [
                 {"HEAD_TEXT": "사용자ID"       , "WIDTH": "100", "FIELD_NAME": "USER_ID", "LINK": "fn_detail"},
                 {"HEAD_TEXT": "사용자구분"     , "WIDTH": "80" , "FIELD_NAME": "USER_DIV_NM"},
@@ -87,9 +86,11 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="REG_DTM" class="col-sm-4">가입신청일</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="REG_DTM">
+                                    <label for="F_REG_DTM" class="col-sm-4">가입신청일</label><label for="T_REG_DTM" style="display: none;">가입신청일</label>
+                                    <div class="col-sm-8 dateSearch">
+                                        <%--<input type="text" class="form-control" id="REG_DTM">--%>
+                                        <input type="text" id="F_REG_DTM" name="F_REG_DTM" <attr:datefield to="T_REG_DTM"/>><span>~</span>
+                                        <input type="text" id="T_REG_DTM" name="T_REG_DTM" <attr:datefield/>>
                                     </div>
                                 </div>
                             </div>
@@ -97,12 +98,13 @@
                                 <div class="form-group">
                                     <label for="USER_STATUS" class="col-sm-4">가입상태</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control" id="USER_STATUS" name="USER_STATUS">
-                                            <option>option 1</option>
-                                            <option>option 2</option>
-                                            <option>option 3</option>
-                                            <option>option 4</option>
-                                            <option>option 5</option>
+                                        <select class="w143" id="USER_STATUS" name="USER_STATUS">
+                                            <option value="">전체</option>
+                                            <option value="A">가입요청</option>
+                                            <option value="B">가입승인</option>
+                                            <option value="C">사용중지</option>
+                                            <option value="D">탈퇴요청</option>
+                                            <option value="E">탈퇴승인</option>
                                         </select>
                                     </div>
                                 </div>
@@ -111,7 +113,7 @@
                                 <div class="form-group">
                                     <label for="USE_CHK" class="col-sm-4">사용여부</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control" id="USE_CHK" name="USE_CHK">
+                                        <select class="w143" id="USE_CHK" name="USE_CHK">
                                             <option value="">선택</option>
                                             <option value="Y">사용</option>
                                             <option value="N">미사용</option>
@@ -123,31 +125,24 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="REG_DTM" class="col-sm-4">가입신청일</label>
+                                    <label for="SEARCH_TXT" class="col-sm-4">검색조건</label><label for="SEARCH_COL" style="display: none;">검색조건</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="REG_DTM">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="USER_STATUS" class="col-sm-4">가입상태</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control" id="USER_STATUS">
-                                            <option>option 1</option>
-                                            <option>option 2</option>
-                                            <option>option 3</option>
-                                            <option>option 4</option>
-                                            <option>option 5</option>
+                                        <select id="SEARCH_COL" name="SEARCH_COL" class="w120">
+                                            <option value="BIZ_NO" selected="">사업자등록번호</option>
+                                            <option value="USER_ID">사용자ID</option>
+                                            <option value="USER_NM">사용자명</option>
                                         </select>
+                                        <input id="SEARCH_TXT" name="SEARCH_TXT" type="text" style="width:calc(100% - 125px)">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="inputPassword3" class="col-sm-4">Password</label>
+                                    <label for="USER_DIV" class="col-sm-4">사용자구분</label>
                                     <div class="col-sm-8">
-                                        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                                        <select id="USER_DIV" name="USER_DIV" class="w143">
+                                            <option value="">선택</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -163,7 +158,10 @@
                 <div class="col-xs-12">
                     <div class="box">
                         <div class="box-header">
-                            <h3 class="box-title">Hover Data Table</h3>
+                            <h3 class="box-title"><%--Hover Data Table--%></h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-block btn-info btn-sm" style="width: 120px;">Excel</button>
+                            </div>
                         </div>
                         <div class="box-body">
                             <div id="gridLayer" style="height: 430px"></div>

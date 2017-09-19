@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+
+    <display-name>Attributes Function/View</display-name>
+    <tlib-version>1.0</tlib-version>
+    <short-name>attr</short-name>
+    <uri>/WEB-INF/tlds/attr</uri>
+
+    <tag>
+        <name>mandantory</name>
+        <tag-class>ke.pe.sdh.core.tld.MandantaryTagHandler</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>changeNoSearch</name>
+        <tag-class>ke.pe.sdh.core.tld.ChangeNoSearchTagHandler</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>selectfield</name>
+        <tag-class>ke.pe.sdh.core.tld.SelectfieldTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                viewType="1" : CODE_NM or "2" : CODE or "3" : [CODE]CODE_NM
+            </description>
+            <name>viewType</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            Like &lt;length="minlength,maxlength"&gt;, or &lt;length="maxlength"&gt;
+        </description>
+        <name>length</name>
+        <tag-class>ke.pe.sdh.core.tld.LengthTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="minlength,maxlength" or value="maxlength"
+            </description>
+            <name>value</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <description>
+                unicode="true" or unicode="false"
+            </description>
+            <name>unicode</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            TAG 속성에 datefield 속성이 있으면 해당 TAG에 CALENDAR 기능을 적용
+        </description>
+        <name>datefield</name>
+        <tag-class>ke.pe.sdh.core.tld.DatefieldTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="numeric and 'm'/'y' "
+            </description>
+            <name>value</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <description>
+                해당 TAG와 toDataefield 속성의 값에 지정된 TAG를 dueCalendar로 지정 ( dueCalendar함수를 호출 )
+                to="To datefield ID"
+            </description>
+            <name>to</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            입력필드의 입력타입이 숫자만 가능
+        </description>
+        <name>numberOnly</name>
+        <tag-class>ke.pe.sdh.core.tld.NumberOnlyTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="true or false"
+            </description>
+            <name>value</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            입력필드의 입력타입이 숫자만 가능
+        </description>
+        <name>decimalFormat</name>
+        <tag-class>ke.pe.sdh.core.tld.DecimalFormatTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="14,4"
+            </description>
+            <name>value</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+        
+    <tag>
+        <description>
+            입력필드의 입력타입이 알파벳만 가능
+        </description>
+        <name>alphaOnly</name>
+        <tag-class>ke.pe.sdh.core.tld.AlphaOnlyTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="true or false"
+            </description>
+            <name>value</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <description>
+            입력필드의 입력타입이 알파벳,숫자만 가능
+        </description>
+        <name>alphaNumber</name>
+        <tag-class>ke.pe.sdh.core.tld.AlphaNumberTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="true or false"
+            </description>
+            <name>value</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+    <tag>
+        <description>
+            입력필드의 입력타입이 알파벳,숫자만 가능
+        </description>
+        <name>hanAlphaNumber</name>
+        <tag-class>ke.pe.sdh.core.tld.HanAlphaNumberTagHandler</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                value="true or false"
+            </description>
+            <name>value</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
+    <tag>
+        <description>
+            입력필드가 Primary Key 라는 표시(Onfocus시 다른 조회 입력필드를 초기화한다.)
+        </description>
+        <name>pk</name>
+        <tag-class>ke.pe.sdh.core.tld.PrimaryTagHandler</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+</taglib>

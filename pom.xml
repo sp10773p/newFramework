@@ -225,6 +225,13 @@
             <version>1.10</version>
         </dependency>
 
+        <!-- Apache lang -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
         <!-- Apache BeanUtil -->
         <dependency>
             <groupId>commons-beanutils</groupId>
