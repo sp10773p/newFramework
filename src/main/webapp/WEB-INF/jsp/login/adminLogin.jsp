@@ -29,16 +29,14 @@
             });
 
             $('#btnLogin').on('click', function(event) {
-                var e = $('#usrId');
-                if ($.trim(e.val()) === '') {
+                if ($.trim($('#userId').val()) === '') {
                     alert($.comm.getMessage("W00000067")); // 아이디를 입력해 주십시오.
-                    e.focus();
+                    $('#userId').focus();
                     return false;
                 }
-                e = $('#usrPswd');
-                if ($.trim(e.val()) === '') {
+                if ($.trim($('#userPw').val()) === '') {
                     alert($.comm.getMessage("W00000068")); // 비밀번호를 입력해 주십시오.
-                    e.focus();
+                    $('#userPw').focus();
                     return false;
                 }
                 loginAction();
@@ -51,12 +49,12 @@
             var saveIdVal = localStorage.getItem(saveIdKey);
 
             if(!$.comm.isNull(saveIdVal)){
-                $('#usrId').val(saveIdVal);
+                $('#userId').val(saveIdVal);
                 $('#saveId').prop("checked", true);
-                $('#usrPswd').focus();
+                $('#userPw').focus();
 
             }else{
-                $('#usrId').focus();
+                $('#userId').focus();
             }
         })
 
@@ -70,7 +68,8 @@
 
         function loginAction() {
             fn_saveid();
-            $('form:first').attr('action', 'adminLogin.do').submit();
+            $('#sessionDiv').val(Constant.ADM_SESSION_DIV);
+            $('form:first').submit();
         }
 
     </script>
@@ -81,18 +80,19 @@
         <div class="box-header with-border">
             <h3 class="box-title" style="font-size: 30px;">Login</h3>
         </div>
-        <form class="form-horizontal">
+        <form class="form-horizontal" method="post" action="/loginAction">
+            <input type="hidden" id="sessionDiv" name="sessionDiv">
             <div class="box-body">
                 <div class="form-group">
                     <label for="userId" class="col-sm-3 control-label">아이디</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="userId" placeholder="아이디">
+                        <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="userPw" class="col-sm-3 control-label">비밀번호</label>
                     <div class="col-sm-9">
-                        <input type="password" class="form-control" id="userPw" placeholder="비밀번호">
+                        <input type="password" class="form-control" id="userPw" name="userPw" placeholder="비밀번호">
                     </div>
                 </div>
                 <div class="form-group">

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="log">
+    <select	id="selectLogList" parameterType="map" resultType="map">
+        SELECT ROW_NUMBER() OVER (ORDER BY SID DESC) RNUM,
+                SID,
+                TO_CHAR(LOG_DTM, 'YYYY-MM-DD HH24:MI:SS') AS LOG_DTM,
+                DECODE(LOG_DIV, 'W', '사용자', 'M', '어드민') AS LOG_DIV_NM,
+                LOG_DIV,
+                USER_ID,
+                LOGIN_IP,
+                SCREEN_ID,
+                SCREEN_NM,
+                RMK,
+                URI
+          FROM CMM_LOG
+         WHERE LOG_DIV IN ('W', 'M', 'S')
+        <if test="F_LOG_DTM != null and F_LOG_DTM != '' and T_LOG_DTM != null and T_LOG_DTM != ''">
+            AND LOG_DTM BETWEEN TO_DATE(#{F_LOG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_LOG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+        </if>
+        <if test="USER_ID != null and USER_ID != ''">
+            AND USER_ID LIKE '%'||#{USER_ID}||'%'
+        </if>
+        <if test="LOG_DIV != null and LOG_DIV != ''">
+            AND LOG_DIV = #{LOG_DIV}
+        </if>
+        <if test="SCREEN_ID != null and SCREEN_ID != ''">
+            AND SCREEN_ID LIKE '%'||#{SCREEN_ID}||'%'
+        </if>
+        <if test="SCREEN_NM != null and SCREEN_NM != ''">
+            AND SCREEN_NM LIKE '%'||#{SCREEN_NM}||'%'
+        </if>
+        <if test="RMK != null and RMK != ''">
+            AND RMK LIKE '%'||#{RMK}||'%'
+        </if>
+        ORDER BY SID DESC
+    </select>
+
+    <select	id="selectParam" parameterType="map" resultType="string">
+        SELECT PARAM
+          FROM CMM_LOG
+         WHERE SID = #{SID}
+    </select>
+
+    <insert id="updateLogPass" parameterType="map">
+        MERGE INTO CMM_LOG_MNG
+           USING DUAL
+              ON (
+                  SCREEN_ID = #{SCREEN_ID}
+                  AND URI = #{URI}
+                  AND RMK = REPLACE(#{RMK}, ' ', '')
+                  )
+         WHEN MATCHED THEN
+              UPDATE SET
+                  REG_ID = #{REG_ID},
+                  REG_DTM = SYSDATE
+         WHEN NOT MATCHED THEN
+              INSERT (KEY, SCREEN_ID, URI, RMK, REG_ID, REG_DTM)
+              VALUES (SYS_GUID(), #{SCREEN_ID}, #{URI}, REPLACE(#{RMK}, ' ', ''), #{REG_ID}, SYSDATE)
+    </insert>
+
+    <select id="selectCmmLogMngList" resultType="logMngModel">
+        SELECT SCREEN_ID AS screenId,
+                URI AS uri,
+                RMK AS rmk
+           FROM CMM_LOG_MNG
+    </select>
+
+    <select id="selectCmmLogMngListForPopup" parameterType="map" resultType="map">
+
+        SELECT ROW_NUMBER() OVER (ORDER BY A.SCREEN_ID) RNUM,
+                A.*
+        FROM (
+                SELECT A.KEY,
+                        A.SCREEN_ID,
+                        B.MENU_NM AS SCREEN_NM,
+                        A.URI,
+                        A.RMK,
+                        A.REG_ID,
+                        A.REG_DTM
+                  FROM CMM_LOG_MNG A, CMM_MENU_MAS B
+                 WHERE A.SCREEN_ID = B.MENU_ID(+)
+                ) A
+        WHERE 1=1
+        <if test="P_SCREEN_ID != null and P_SCREEN_ID != ''">
+            AND A.SCREEN_ID LIKE '%'||#{P_SCREEN_ID}||'%'
+        </if>
+        <if test="SEARCH_TXT != null and SEARCH_TXT != ''">
+            <if test="SEARCH_COL == 'SCREEN_NM'">
+                AND A.SCREEN_NM LIKE '%'||#{SEARCH_TXT}||'%'
+            </if>
+            <if test="SEARCH_COL == 'URI'">
+                AND A.URI LIKE '%'||#{SEARCH_TXT}||'%'
+            </if>
+            <if test="SEARCH_COL == 'RMK'">
+                AND A.RMK LIKE '%'||#{SEARCH_TXT}||'%'
+            </if>
+        </if>
+
+        ORDER BY SCREEN_ID
+    </select>
+
+    <select id="selectCmmLogMngCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM CMM_LOG_MNG
+         WHERE SCREEN_ID = #{SCREEN_ID}
+           AND URI = #{URI}
+           AND RMK = REPLACE(#{RMK}, ' ', '')
+    </select>
+
+    <insert id="insertCmmLogMng" parameterType="map">
+        INSERT INTO CMM_LOG_MNG(KEY, SCREEN_ID, URI, RMK, REG_ID, REG_DTM)
+         VALUES (SYS_GUID(), #{SCREEN_ID}, #{URI}, REPLACE(#{RMK}, ' ', ''), #{REG_ID}, SYSDATE)
+    </insert>
+
+    <update id="updateCmmLogMng" parameterType="map">
+        UPDATE CMM_LOG_MNG
+           SET  SCREEN_ID = #{SCREEN_ID},
+                URI = #{URI},
+                RMK = REPLACE(#{RMK}, ' ', ''),
+                REG_ID = #{SSuserId},
+                REG_DTM = SYSDATE
+         WHERE KEY = #{KEY}
+    </update>
+
+    <delete id="deleteCmmLogMng" parameterType="map">
+        DELETE FROM CMM_LOG_MNG
+        WHERE KEY = #{KEY}
+    </delete>
+</mapper>

@@ -624,11 +624,9 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public UsrSessionModel getUsrSessionModel(HttpServletRequest request) {
-        String sessionDiv = request.getHeader("sessiondiv"); // ajax 용
-        if(sessionDiv == null) sessionDiv = request.getParameter("MENU_DIV");   // 메뉴 용
-        if(sessionDiv == null) sessionDiv = request.getParameter("sessionDiv");
-        if(sessionDiv == null) sessionDiv = request.getParameter(Constant.ACTION_MENU_DIV.getCode());
-        if(sessionDiv == null) sessionDiv = (request.getAttribute("sessionDiv") == null ? null : (String)request.getAttribute("sessionDiv")); // AdminServlet 용
+        String sessionDiv = request.getParameter("sessionDiv"); // ajax 용
+
+        if(sessionDiv == null) sessionDiv = request.getHeader("sessionDiv");
 
         HttpSession session = request.getSession();
         String sessionKey = Constant.SESSION_KEY_USR.getCode();

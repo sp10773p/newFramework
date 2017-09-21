@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="usr">
+    <select	id="selectUsrSessionInfo" parameterType="string" resultType="usrSessionModel">
+        <![CDATA[
+			SELECT
+			       A.USER_ID      AS userId             /*사용자ID*/
+			     , A.USER_NM      AS userNm             /*사용자명*/
+			     , A.USER_PW      AS userPw             /*패스워드*/
+			     , A.USER_DIV     AS userDiv            /*사용자구분*/
+			     , A.AUTH_CD      AS authCd             /*권한코드*/
+			     , A.TEL_NO       AS telNo              /*전화번호*/
+			     , A.HP_NO        AS hpNo               /*핸드폰번호*/
+			     , A.EMAIL        AS email              /*이메일*/
+			     , A.LOGIN_START  AS loginStart         /*최초로그인*/
+			     , A.LOGIN_LAST   AS loginLast          /*최종로그인*/
+			     , TO_CHAR(A.LOGIN_LAST, 'YYYY')||'년 '||TO_CHAR(A.LOGIN_LAST, 'MM')||'월 '||TO_CHAR(A.LOGIN_LAST, 'DD')||'일' AS loginLastStr       /*최종로그인*/
+			     , A.LOGIN_ERROR  AS loginError         /*로그인에러*/
+			     , A.PW_PRIOR     AS pwPrior            /*이전비밀번호*/
+			     , A.PW_CHANGE    AS pwChange           /*비밀번호변경일*/
+			     , A.PW_UPDATE    AS pwUpdate           /*비밀번호변경주기*/
+			     , A.PW_PERIOD    AS pwPeriod           /*비밀번호변경기간*/
+			     , A.USE_CHK      AS useChk            /*사용여부*/
+			     , A.USER_STATUS  AS userStatus         /* 사용자 상태 */
+			     , A.REG_ID       AS regId              /*등록자ID*/
+			     , A.REG_DTM      AS regDtm             /*등록일자*/
+			     , A.MOD_ID       AS modId              /*수정자ID*/
+			     , A.MOD_DTM      AS modDtm             /*수정일자*/
+			     , A.APPLICANT_ID AS applicantId		/*관세사신고인부호*/
+			     , A.BIZ_NO       AS bizNo              /*사업자등록번호*/
+                 , A.BIZ_DIV      AS bizDiv             /*사업자구분*/
+                 , A.CHARGE_NM    AS chargeNm           /*담당자명*/
+                 , A.TG_NO AS tgNo	/* 통관고유부호 */
+                 , A.REP_NM repNm /* 대표자명 */
+                 , A.ZIP_CD zipCd /* 우편번호 */
+                 , A.ADDRESS address /* 주소 */
+                 , A.UTH_USER_ID uthUserId
+			FROM CMM_USER A
+			WHERE A.USER_ID = #{usrId}
+		]]>
+    </select>
+
+    <update id="updateUserLoginInfo" parameterType="usrSessionModel">
+        UPDATE CMM_USER
+           SET
+                <if test="loginStart != null and loginStart != ''">
+                  LOGIN_START = TO_TIMESTAMP(#{loginStart}, 'YYYY-MM-DD HH24:MI:SS.FF'),
+                </if>
+                <if test="loginLast != null and loginLast != ''">
+                  LOGIN_LAST = TO_TIMESTAMP(#{loginLast}, 'YYYY-MM-DD HH24:MI:SS.FF'),
+                </if>
+                <if test="modId != null and modId != ''">
+                  MOD_ID = #{modId},
+                </if>
+                MOD_DTM = SYSDATE,
+                LOGIN_ERROR = #{loginError}
+         WHERE USER_ID = #{userId}
+    </update>
+
+    <select	id="selectUsrList" parameterType="map" resultType="map">
+        SELECT  ROW_NUMBER() OVER (ORDER BY REG_DTM DESC) RNUM
+                , USER_ID                    /* 사용자ID */
+                , USER_NM                    /* 사용자명 */
+                , AUTH_CD                    /* 권한코드 */
+                , TEL_NO                     /* 전화번호 */
+                , HP_NO                      /* 휴대폰번호 */
+                , EMAIL                      /* 이메일 */
+                , TO_CHAR(LOGIN_START, 'YYYY-MM-DD HH24:MI:SS') AS LOGIN_START                /* 최초로그인시간 */
+                , TO_CHAR(LOGIN_LAST, 'YYYY-MM-DD HH24:MI:SS') AS LOGIN_LAST                 /* 최종로그인시간 */
+                , TO_CHAR(LOGIN_START, 'YYYY-MM-DD HH24:MI:SS')||TO_CHAR(LOGIN_LAST, 'YYYY-MM-DD HH24:MI:SS') AS LOGIN_TIME
+                , LOGIN_ERROR                /* 로그인오류 */
+                , PW_PRIOR                   /* 이전패스워드 */
+                , PW_CHANGE                  /* 패스워드변경일시 */
+                , PW_UPDATE                  /* 패스워드변경주기 */
+                , PW_PERIOD                  /* 패스워드사용기간 */
+                , USE_CHK                    /* 사용여부 */
+                , EXPIRE_DT                  /* 만료일자 */
+                , REG_ID                     /* 등록자ID */
+                , TO_CHAR(REG_DTM, 'YYYY-MM-DD') AS REG_DTM                    /* 등록일시 */
+                , MOD_ID                     /* 수정자ID */
+                , TO_CHAR(MOD_DTM , 'YYYY-MM-DD') AS MOD_DTM                    /* 수정일시 */
+                , TO_CHAR(APPROVAL_DTM, 'YYYY-MM-DD') AS APPROVAL_DTM                /* 가입승인일자 */
+                , USER_DIV                   /* 사용자구분 */
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'USER_DIV' AND CODE = CMM_USER.USER_DIV) AS USER_DIV_NM
+                , BIZ_NO                     /* 사업자등록번호 */
+                , BIZ_DIV                    /* 사업자구분 */
+                , CHARGE_NM                  /* 담당자명 */
+                , BIZ_CONDITION              /* 업태 */
+                , BIZ_LINE                   /* 종목 */
+                , ATCH_FILE_ID               /* 첨부파일 */
+                , USER_STATUS                /* 가입상태 */
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'USER_STATUS' AND CODE = CMM_USER.USER_STATUS) AS USER_STATUS_NM
+                , WITHDRAW_DT                /* 탈퇴일자 */
+                , TO_CHAR(WITHDRAW_PROC_DTM , 'YYYY-MM-DD') AS WITHDRAW_PROC_DTM          /* 탈퇴처리일시 */
+                , FAX_NO                     /* 팩스번호 */
+                , APPLICANT_ID               /* 관세사신고인부호 */
+           FROM CMM_USER
+          WHERE 1 = 1
+            AND USER_DIV IN ('S', 'M', 'G', 'E')
+            <if test="USER_ID != null and USER_ID != ''">
+                AND USER_ID = #{USER_ID}
+            </if>
+            <if test="F_REG_DTM != null and F_REG_DTM != '' and T_REG_DTM != null and T_REG_DTM != ''">
+                AND REG_DTM BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+            </if>
+            <if test="SEARCH_TXT != null and SEARCH_TXT != ''">
+                <if test="SEARCH_COL == 'BIZ_NO'">
+                    AND BIZ_NO LIKE '%'||#{SEARCH_TXT}||'%'
+                </if>
+                <if test="SEARCH_COL == 'USER_ID'">
+                    AND USER_ID LIKE '%'||#{SEARCH_TXT}||'%'
+                </if>
+                <if test="SEARCH_COL == 'USER_NM'">
+                    AND USER_NM LIKE '%'||#{SEARCH_TXT}||'%'
+                </if>
+            </if>
+            <if test="USER_STATUS != null and USER_STATUS != ''">
+                AND USER_STATUS = #{USER_STATUS}
+            </if>
+            <if test="USE_CHK != null and USE_CHK != ''">
+                AND USE_CHK = #{USE_CHK}
+            </if>
+            <if test="USE_CHK != null and USE_CHK != ''">
+                AND USE_CHK = #{USE_CHK}
+            </if>
+            <if test="USER_DIV != null and USER_DIV != ''">
+                AND USER_DIV = #{USER_DIV}
+            </if>
+            ORDER 	BY REG_DTM DESC
+    </select>
+
+    <select	id="selectUsrStatusSumm" parameterType="map" resultType="map">
+        SELECT SUM(STATUS0) AS STATUS0, SUM(STATUS8) AS STATUS8
+           FROM (
+                SELECT DECODE(USER_STATUS, '0', 1, 0) AS STATUS0,
+                        DECODE(USER_STATUS, '8', 1, 0) AS STATUS8
+                  FROM CMM_USER
+                 WHERE USER_DIV IN ('S', 'M', 'G', 'E')
+                <!--<if test="USER_ID != null and USER_ID != ''">
+                    AND USER_ID = #{USER_ID}
+                </if>
+                <if test="F_REG_DTM != null and F_REG_DTM != '' and T_REG_DTM != null and T_REG_DTM != ''">
+                    AND REG_DTM BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+                </if>
+                <if test="SEARCH_TXT != null and SEARCH_TXT != ''">
+                    AND
+                    <if test="SEARCH_COL == 'BIZ_NO'">
+                         BIZ_NO
+                    </if>
+                    <if test="SEARCH_COL == 'USER_ID'">
+                         USER_ID
+                    </if>
+                    <if test="SEARCH_COL == 'USER_NM'">
+                         USER_NM
+                    </if>
+                    LIKE '%'||#{SEARCH_TXT}||'%'
+                </if>
+                <if test="USER_STATUS != null and USER_STATUS != ''">
+                    AND USER_STATUS = #{USER_STATUS}
+                </if>
+                <if test="USE_CHK != null and USE_CHK != ''">
+                    AND USE_CHK = #{USE_CHK}
+                </if>
+                <if test="USE_CHK != null and USE_CHK != ''">
+                    AND USE_CHK = #{USE_CHK}
+                </if>
+                <if test="USER_DIV != null and USER_DIV != ''">
+                    AND USER_DIV = #{USER_DIV}
+                </if>-->
+                )
+    </select>
+
+    <select	id="selectUser" parameterType="map" resultType="map">
+        SELECT A.USER_ID                    /* 사용자ID */
+                , A.USER_NM                    /* 사용자명 */
+                , '' AS USER_PW                /* 패스워드 */
+                , A.AUTH_CD                    /* 권한코드 */
+                , TEL_NO                        /* 전화번호 */
+                , HP_NO                         /* 휴대폰번호 */
+                , EMAIL				            /* 이메일 */
+                , TO_CHAR(A.LOGIN_START,'YYYY-MM-DD HH24:MI:SS') AS LOGIN_START /* 최초로그인시간 */
+                , TO_CHAR(A.LOGIN_LAST ,'YYYY-MM-DD HH24:MI:SS') AS LOGIN_LAST  /* 최종로그인시간 */
+                , A.LOGIN_ERROR                /* 로그인오류 */
+                , A.PW_PRIOR                   /* 이전패스워드 */
+                , TO_CHAR(A.PW_CHANGE,'YYYY-MM-DD HH24:MI:SS') AS PW_CHANGE    /* 패스워드변경일시 */
+                , A.PW_UPDATE                  /* 패스워드변경주기 */
+                , A.PW_PERIOD                  /* 패스워드사용기간 */
+                , A.USE_CHK                    /* 사용여부 */
+                , A.EXPIRE_DT                  /* 만료일자 */
+                , A.REG_ID                     /* 등록자ID */
+                , TO_CHAR(A.REG_DTM, 'YYYY-MM-DD') AS REG_DTM                    /* 등록일시 */
+                , A.MOD_ID                     /* 수정자ID */
+                , TO_CHAR(A.MOD_DTM, 'YYYY-MM-DD') AS MOD_DTM                    /* 수정일시 */
+                , TO_CHAR(A.APPROVAL_DTM, 'YYYY-MM-DD') AS APPROVAL_DTM                    /* 가입승인일자 */
+                , A.USER_DIV                   /* 사용자구분 */
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'USER_DIV' AND CODE = A.USER_DIV) AS USER_DIV_NM
+                , A.BIZ_NO                     /* 사업자등록번호 */
+                , A.BIZ_DIV                    /* 사업자구분 */
+                , A.CHARGE_NM                  /* 담당자명 */
+                , A.BIZ_CONDITION              /* 업태 */
+                , A.BIZ_LINE                   /* 종목 */
+                , A.ATCH_FILE_ID               /* 첨부파일 */
+                , A.USER_STATUS                /* 가입상태 */
+                , A.USER_STATUS AS ORG_USER_STATUS    /* 가입상태 */
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'USER_STATUS' AND CODE = A.USER_STATUS) AS USER_STATUS_NM
+                , A.WITHDRAW_DT                /* 탈퇴일자 */
+                , TO_CHAR(A.WITHDRAW_PROC_DTM, 'YYYY-MM-DD') AS WITHDRAW_PROC_DTM          /* 탈퇴처리일시 */
+                , A.FAX_NO                     /* 팩스번호 */
+                , A.APPLICANT_ID               /* 관세사신고인부호 */
+                , A.DEPT					   /* 부서 */
+                , A.POS						   /* 직위 */
+                , A.CO_NM_ENG					/* 업체영문명 */
+                , A.REP_NM						/* 대표자명 */
+                , A.REP_NM_ENG					/* 대표자영문명 */
+                , A.ZIP_CD						/* 우편번호 */
+                , A.ADDRESS					    /* 주소 */
+                , A.ADDRESS2					/* 상세주소 */
+                , A.ADDRESS_EN					/* 영문주소 */
+                , A.TG_NO						/* 통관고유부호 */
+                , A.WITHDRAW_REASON			    /* 탈퇴사유 */
+                , A.HS_MNG_OPERATE				/* 상품HS분류권한 */
+                , B.API_KEY					    /* API KEY */
+                , B.API_REQ_STATUS              /* API KEY 상태 */
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'API_REQ_STATUS' AND CODE = B.API_REQ_STATUS) AS API_REQ_STATUS_NM
+                , TO_CHAR(TO_DATE(B.API_APPORVE_DT, 'YYYYMMDD'), 'YYYY-MM-DD') AS API_APPORVE_DT /* API KEY 승인일자 */
+                , A.AUTO_SEND_YN                /* 자동신고여부 */
+                , A.ITEM_SEND_YN                /* 품목별신고여부 */
+                , A.REG_MALL_ID                 /* 등록몰ID */
+                , A.UTH_USER_ID                 /* UTH 사용자 ID */
+                , A.SIGN_VALUE                  /* 전자서명 */
+        FROM CMM_USER A, CMM_API_KEY_MNG B
+          WHERE A.USER_ID = B.USER_ID(+)
+            AND A.USER_ID = #{USER_ID}
+    </select>
+
+    <update id="updateUser" parameterType="map">
+        UPDATE CMM_USER
+           SET   USER_NM           = #{USER_NM}
+                ,TEL_NO            = #{TEL_NO}
+                ,HP_NO             = #{HP_NO}
+                ,EMAIL             = #{EMAIL}
+                ,APPLICANT_ID      = #{APPLICANT_ID}
+                ,BIZ_NO            = #{BIZ_NO}
+                ,CHARGE_NM         = #{CHARGE_NM}
+                ,DEPT              = #{DEPT}
+                ,POS               = #{POS}
+                ,USER_STATUS       = #{USER_STATUS}
+                ,BIZ_CONDITION     = #{BIZ_CONDITION}
+                ,BIZ_LINE          = #{BIZ_LINE}
+                ,CO_NM_ENG         = #{CO_NM_ENG}
+                ,REP_NM            = #{REP_NM}
+                ,REP_NM_ENG        = #{REP_NM_ENG}
+                ,ZIP_CD            = #{ZIP_CD}
+                ,ADDRESS           = #{ADDRESS}
+                ,ADDRESS2          = #{ADDRESS2}
+                ,ADDRESS_EN        = #{ADDRESS_EN}
+                ,TG_NO             = #{TG_NO}
+                ,WITHDRAW_DT       = #{WITHDRAW_DT}
+                ,WITHDRAW_PROC_DTM = #{WITHDRAW_PROC_DTM}
+                ,WITHDRAW_REASON   = #{WITHDRAW_REASON}
+                ,FAX_NO            = #{FAX_NO}
+                ,AUTO_SEND_YN      = #{AUTO_SEND_YN}
+                ,ITEM_SEND_YN      = #{ITEM_SEND_YN}
+                ,REG_MALL_ID       = #{REG_MALL_ID}
+                ,UTH_USER_ID       = #{UTH_USER_ID}
+                ,MOD_ID            = #{MOD_ID}
+                ,MOD_DTM           = SYSDATE
+         WHERE USER_ID = #{USER_ID}
+    </update>
+
+    <update id="updateUserPassword" parameterType="map">
+        UPDATE CMM_USER
+           SET USER_PW = #{USER_PW}
+         WHERE USER_ID = #{USER_ID}
+    </update>
+
+    <update id="updateUserApprove" parameterType="map">
+        UPDATE CMM_USER A
+     	   SET  A.USE_CHK = 'Y',
+     	 	    A.USER_STATUS = '1',
+     	 	    A.APPROVAL_DTM = SYSDATE
+		 WHERE 1=1
+		   AND A.USER_ID = #{USER_ID}
+    </update>
+
+    <delete id="deleteCmmbasevalSeller" parameterType="map">
+        DELETE FROM CMM_BASEVAL_SELLER
+         WHERE BIZ_NO  = #{BIZ_NO}
+    </delete>
+
+    <insert id="insertCmbasevalSeller" parameterType="map">
+        INSERT INTO CMM_BASEVAL_SELLER
+        (BIZ_NO, DOC_ID, DOC_ITEM, BASE_VAL, REG_ID, REG_DTM, MOD_ID, MOD_DTM)
+        SELECT #{BIZ_NO}, DOC_ID, DOC_ITEM, BASE_VAL, #{BASE_VAL:VARCHAR}, SYSDATE, #{BASE_VAL:VARCHAR}, SYSDATE
+          FROM CMM_BASEVAL
+         WHERE DOC_ID      ='수출신고'
+           AND TABLE_NM    ='EXP_CUSDEC830'
+           AND BASE_VAL_DIV='N'
+    </insert>
+
+    <select id="selectCmmSellerCount" resultType="int">
+        <![CDATA[
+      	 	SELECT  COUNT(*)
+         	  FROM  CMM_SELLER A
+         	 WHERE  A.BIZ_NO = #{BIZ_NO}
+    	]]>
+    </select>
+
+    <insert id="insertCmmSeller" parameterType="map">
+        <![CDATA[
+		    INSERT INTO CMM_SELLER (
+                 BIZ_NO
+               , SELLER_NM
+               , TG_NO
+               , APPLICANT_ID
+               , ADDRESS
+               , POST_NO
+               , TEL_NO
+               , EMAIL_ADDRESS
+               , REG_MALL_ID
+               , REG_ID
+               , REG_DTM
+			)VALUES(
+                #{BIZ_NO:VARCHAR}
+              , #{USER_NM:VARCHAR}
+              , #{TG_NO:VARCHAR}
+              , #{APPLICANT_ID:VARCHAR}
+              , #{ADDRESS:VARCHAR}
+              , #{ZIP_CD:VARCHAR}
+              , #{TEL_NO:VARCHAR}
+              , #{EMAIL:VARCHAR}
+              , #{USER_ID:VARCHAR}
+              , #{REG_ID:VARCHAR}
+              , SYSDATE
+			)
+		]]>
+    </insert>
+
+    <update id="udpateCmmSeller" parameterType="map">
+        <![CDATA[
+     		UPDATE CMM_SELLER
+     		   SET SELLER_NM     = #{USER_NM}
+     		     , TG_NO         = #{TG_NO}
+     		     , APPLICANT_ID  = #{APPLICANT_ID}
+     		     , ADDRESS       = #{ADDRESS}
+     		     , POST_NO       = #{ZIP_CD}
+     		     , TEL_NO        = #{TEL_NO}
+     		     , EMAIL_ADDRESS = #{EMAIL}
+     		     , REG_MALL_ID   = #{USER_ID}
+     		     , MOD_ID        = #{REG_ID}
+     		     , MOD_DTM       = SYSDATE
+			WHERE BIZ_NO = #{BIZ_NO}
+		]]>
+    </update>
+
+    <update id="updateUserAuthcd" parameterType="map">
+        <![CDATA[
+     		UPDATE CMM_USER
+     		   SET    AUTH_CD  = #{AUTH_CD}
+                     , MOD_ID   = #{REG_ID}
+                     , MOD_DTM  = SYSDATE
+			WHERE USER_ID = #{USER_ID}
+		]]>
+    </update>
+
+    <update id="updateAPIKeyMng">
+        <![CDATA[
+		   UPDATE CMM_API_KEY_MNG
+			  SET API_KEY          = #{API_KEY:VARCHAR}
+  			      , VALID_FROM_DT  = TO_CHAR(SYSDATE, 'YYYYMMDD')
+	              , VALID_TO_DT    = '99991231'
+	              , API_REQ_STATUS = 'A'
+	              , API_APPORVE_DT = TO_CHAR(SYSDATE, 'YYYYMMDD')
+	              , MOD_ID         = #{MOD_ID:VARCHAR}
+	              , MOD_DTM        = SYSDATE
+			WHERE USER_ID = #{USER_ID:VARCHAR}
+		]]>
+    </update>
+
+    <select id="selectApiDtl" resultType="map">
+        <![CDATA[
+      	 	SELECT  USER_ID
+         	  FROM  CMM_API_KEY_DTL A
+         	 WHERE  A.USER_ID = #{USER_ID}
+    	]]>
+    </select>
+
+    <insert id="insertApiDtl">
+        <![CDATA[
+			INSERT INTO CMM_API_KEY_DTL (
+                 USER_ID
+               , API_KEY
+               , API_ID
+               , LIMIT_DETAIL_CNT
+               , DAILY_CALL_CNT
+               , PER_CALL_CNT
+               , REG_ID
+               , REG_DTM
+               , MOD_ID
+               , MOD_DTM
+ 			 )
+			SELECT
+                     B.USER_ID
+                   , B.API_KEY
+                   , A.API_ID
+                   , A.LIMIT_DETAIL_CNT
+                   , A.DAILY_CALL_CNT
+                   , A.PER_CALL_CNT
+                   , 'SYSTEM'
+                   , SYSDATE
+                   , 'SYSTEM'
+                   , SYSDATE
+			 FROM CMM_API_MNG A, CMM_API_KEY_MNG B
+			WHERE USER_ID = #{USER_ID:VARCHAR}
+		]]>
+    </insert>
+
+    <update id="updateUserDrop" parameterType="map">
+        <![CDATA[
+     		UPDATE CMM_USER
+     		   SET  USE_CHK = 'N'
+     		       , USER_STATUS = '9'
+     		       , EMAIL = ''
+     		       , HP_NO = ''
+     		       , TEL_NO = ''
+     		       , WITHDRAW_PROC_DTM = SYSDATE
+     		       , MOD_DTM = SYSDATE
+                   , MOD_ID  = #{MOD_ID}
+			WHERE USER_ID = #{USER_ID}
+		]]>
+    </update>
+
+    <update id="updateApiReqStatus" parameterType="map">
+        <![CDATA[
+     		UPDATE CMM_API_KEY_MNG
+     		   SET    API_REQ_STATUS = 'P'
+     		        , MOD_DTM = SYSDATE
+                    , MOD_ID  = #{MOD_ID}
+			 WHERE USER_ID = #{USER_ID}
+		]]>
+    </update>
+
+    <insert id="insertCmmStatusHis" parameterType="map">
+        INSERT INTO  CMM_STATUS_HIS(
+            USER_ID
+            , USER_STATUS
+            , DESCRIPTION
+            , REG_ID
+            , REG_DTM
+        )VALUES(
+            #{USER_ID}
+            , #{USER_STATUS}
+            , #{USER_STATUS_REASON }
+            , #{SSuserId}
+            , SYSDATE
+        )
+    </insert>
+
+    <select id="selectCmmStatusHis" parameterType="map" resultType="map">
+        SELECT ROW_NUMBER() OVER (ORDER BY REG_DTM DESC ) RNUM
+                , USER_ID
+                , USER_STATUS
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'USER_STATUS' AND CODE = CMM_STATUS_HIS.USER_STATUS) AS USER_STATUS_NM
+                , DESCRIPTION
+                , REG_ID
+                , TO_CHAR(REG_DTM, 'YYYY-MM-DD') AS REG_DTM
+          FROM CMM_STATUS_HIS
+         WHERE USER_ID = #{USER_ID}
+        <if test="USER_STATUS != null and USER_STATUS != ''">
+          AND USER_STATUS = #{USER_STATUS}
+        </if>
+        ORDER BY REG_DTM DESC
+    </select>
+
+    <select id="selectCmmIdentifier" parameterType="map" resultType="map">
+        SELECT TYPE
+                , (<include refid="common.commonCodeName"/> AND CLASS_ID = 'IDENTIFIER_TYPE' AND CODE = CMM_IDENTIFIER.TYPE) AS TYPE_NM
+                , USER_ID
+                , IDENTIFY_ID
+                , REG_ID
+                , TO_CHAR(REG_DTM, 'YYYY-MM-DD') AS REG_DTM
+                , MOD_ID
+                , TO_CHAR(MOD_DTM , 'YYYY-MM-DD') AS MOD_DTM
+          FROM CMM_IDENTIFIER
+         WHERE USER_ID = #{USER_ID}
+    </select>
+
+    <update id="udpateUsrAttchFileId" parameterType="map">
+        UPDATE CMM_USER
+           SET ATCH_FILE_ID = #{ATCH_FILE_ID}
+         WHERE USER_ID = #{USER_ID}
+    </update>
+
+    <delete id="deleteCmmbasevalseller" parameterType="map">
+        DELETE FROM CMM_BASEVAL_SELLER
+         WHERE BIZ_NO = #{BIZ_NO}
+    </delete>
+
+    <delete id="deleteCmmstatushis" parameterType="map">
+        DELETE FROM CMM_STATUS_HIS
+         WHERE USER_ID = #{USER_ID}
+    </delete>
+
+    <delete id="deleteCmmuser" parameterType="map">
+        DELETE FROM CMM_USER
+         WHERE USER_ID = #{USER_ID}
+    </delete>
+
+    <delete id="deleteCmmidentifier" parameterType="map">
+        DELETE FROM CMM_IDENTIFIER
+         WHERE USER_ID = #{USER_ID}
+    </delete>
+
+    <select	id="selectUserBaseVal" parameterType="map" resultType="map">
+        SELECT
+              NVL((SELECT CODE_NM||' ('||CODE||')' FROM CMM_STD_CODE WHERE CLASS_ID = 'CUS0015' AND CODE = CUSTOMORGANIZATIONID), ' ') AS CUSTOMORGANIZATIONID -- 세관코드
+            , NVL((SELECT CODE_NM||' ('||CODE||')' FROM CMM_STD_CODE WHERE CLASS_ID = 'CUS0004' AND CODE = CUSTOMDEPARTMENTID), ' ')   AS CUSTOMDEPARTMENTID   -- 과코드
+            , NVL((SELECT CODE_NM||' ('||CODE||')' FROM CMM_STD_CODE WHERE CLASS_ID = 'CUS0046' AND CODE = LODINGLOCATIONID), ' ')     AS LODINGLOCATIONID     -- 적재항
+            , NVL(GOODSLOCATIONID1, ' ')                                                                                                  AS GOODSLOCATIONID1     -- 물품소재지 우편번호
+            , NVL((SELECT CODE_NM||' ('||CODE||')' FROM CMM_STD_CODE WHERE CLASS_ID = 'CUS0038' AND CODE = DELIVERYTERMSCODE), ' ')    AS DELIVERYTERMSCODE    -- 인도조건
+            , NVL((SELECT CODE_NM||' ('||CODE||')' FROM CMM_STD_CODE WHERE CLASS_ID = 'CUS0003' AND CODE = PAYMENTTERMSTYPECODE), ' ') AS PAYMENTTERMSTYPECODE -- 결제방법코드
+            , NVL(DECODE(EXPORTERCLASSCODE, 'C', 'C (완제품판매자)', EXPORTERCLASSCODE), ' ')                                             AS EXPORTERCLASSCODE    -- 수출자구분
+            , NVL((SELECT CODE_NM||' ('||CODE||')' FROM CMM_STD_CODE WHERE CLASS_ID = 'CUS0048' AND CODE = DRAWBACKROLE), ' ')         AS DRAWBACKROLE         -- 환급신청인
+            , NVL(DECODE(INSPECTIONCODE, 'A', 'A (신고지)', 'B', 'B (적재지)'), ' ')                                                      AS INSPECTIONCODE       -- 검사방법선택
+            , NVL(DECODE(TRANSPORTMEANSCODE, '40', '40 (항공기)', '10', '10 (선박)'), ' ')                                                AS TRANSPORTMEANSCODE   -- 주운송수단
+            , NVL(GOODSLOCATIONNAME, ' ')                                                                                                 AS GOODSLOCATIONNAME    -- 물품소재지
+        FROM (
+             SELECT
+                      MAX(CUSTOMORGANIZATIONID) AS CUSTOMORGANIZATIONID
+                    , MAX(CUSTOMDEPARTMENTID) AS CUSTOMDEPARTMENTID
+                    , MAX(LODINGLOCATIONID) AS LODINGLOCATIONID
+                    , MAX(GOODSLOCATIONID1) AS GOODSLOCATIONID1
+                    , NVL(MAX(DELIVERYTERMSCODE), 'FOB') AS DELIVERYTERMSCODE
+                    , NVL(MAX(PAYMENTTERMSTYPECODE), 'CD') AS PAYMENTTERMSTYPECODE
+                    , NVL(MAX(EXPORTERCLASSCODE), 'C') AS EXPORTERCLASSCODE
+                    , NVL(MAX(DRAWBACKROLE), '0') AS DRAWBACKROLE
+                    , NVL(MAX(INSPECTIONCODE), 'A') AS INSPECTIONCODE
+                    , NVL(MAX(TRANSPORTMEANSCODE), '40') AS TRANSPORTMEANSCODE
+                    , MAX(GOODSLOCATIONNAME) AS GOODSLOCATIONNAME
+               FROM (
+                     SELECT DECODE(UPPER(A.DOC_ITEM), 'CUSTOMORGANIZATIONID', BASE_VAL, NULL) AS CUSTOMORGANIZATIONID
+                            , DECODE(UPPER(A.DOC_ITEM), 'CUSTOMDEPARTMENTID', BASE_VAL, NULL) AS CUSTOMDEPARTMENTID
+                            , DECODE(UPPER(A.DOC_ITEM), 'LODINGLOCATIONID', BASE_VAL, NULL) AS LODINGLOCATIONID
+                            , DECODE(UPPER(A.DOC_ITEM), 'GOODSLOCATIONID1', BASE_VAL, NULL) AS GOODSLOCATIONID1
+                            , DECODE(UPPER(A.DOC_ITEM), 'DELIVERYTERMSCODE', BASE_VAL, NULL) AS DELIVERYTERMSCODE
+                            , DECODE(UPPER(A.DOC_ITEM), 'PAYMENTTERMSTYPECODE', BASE_VAL, NULL) AS PAYMENTTERMSTYPECODE
+                            , DECODE(UPPER(A.DOC_ITEM), 'EXPORTERCLASSCODE', BASE_VAL, NULL) AS EXPORTERCLASSCODE
+                            , DECODE(UPPER(A.DOC_ITEM), 'DRAWBACKROLE', BASE_VAL, NULL) AS DRAWBACKROLE
+                            , DECODE(UPPER(A.DOC_ITEM), 'INSPECTIONCODE', BASE_VAL, NULL) AS INSPECTIONCODE
+                            , DECODE(UPPER(A.DOC_ITEM), 'TRANSPORTMEANSCODE', BASE_VAL, NULL) AS TRANSPORTMEANSCODE
+                            , DECODE(UPPER(A.DOC_ITEM), 'GOODSLOCATIONNAME', BASE_VAL, NULL) AS GOODSLOCATIONNAME
+                       FROM CMM_BASEVAL_SELLER A, CMM_USER B
+                      WHERE A.BIZ_NO = B.BIZ_NO
+                        AND B.USER_ID = #{USER_ID}
+                    )
+            )
+    </select>
+
+</mapper>

@@ -19,6 +19,8 @@
         <context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation" />
     </context:component-scan>
 
+    <mvc:default-servlet-handler />
+
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
             <bean class="kr.pe.sdh.core.base.AjaxModelArgumentResolver"/>
@@ -79,6 +81,7 @@
         </mvc:interceptor>
     </mvc:interceptors>-->
 
+
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />
 
@@ -87,7 +90,7 @@
     <!-- ============================== -->
     <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" p:order="1"
           p:viewClass="org.springframework.web.servlet.view.JstlView"
-          p:prefix="/WEB-INF/jsp/" p:suffix=".jsp">
+          p:prefix="WEB-INF/jsp/" p:suffix=".jsp">
     </bean>
 
     <!--<context:annotation-config/>-->

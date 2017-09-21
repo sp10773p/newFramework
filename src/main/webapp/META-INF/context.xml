@@ -30,7 +30,7 @@
     <!--
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
-    <Resource name="jdbc/ecdpJNDI"
+    <Resource name="jdbc/ucsJNDI"
               auth="Container"
               type="javax.sql.DataSource"
               driverClassName="oracle.jdbc.driver.OracleDriver"

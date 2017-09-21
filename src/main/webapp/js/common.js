@@ -23,13 +23,12 @@
                             processData: false,
                             contentType: "application/json; charset=UTF-8",
                             enctype: 'multipart/form-data',
-                            data: (isAjaxConvert == true ? data : $.comm.getAjaxData(data, actionNm)),
+                            data: $.comm.getAjaxData(data, actionNm, isAjaxConvert),
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader("AJAX"                , true);
                                 xhr.setRequestHeader("ACTION_MENU_ID"      , $.page.getMenuId());
                                 xhr.setRequestHeader("sessionDiv"          , $.page.getSessionDiv() );
                                 xhr.setRequestHeader("GLOBAL_LOGIN_USER_ID", $.comm.getGlobalVar("GLOBAL_LOGIN_USER_ID"));
-                                if($.comm.getGlobalVar("api_consumer_key") != null) xhr.setRequestHeader("api_consumer_key", $.comm.getGlobalVar("api_consumer_key"));
 
                                 $.comm.wait(true);
                             },
@@ -716,15 +715,6 @@
             $("#commonForm").attr("action", "/jspView.do?jsp="+jsp).submit();
 
         },
-        logout: function (url) {
-            var form = $("<form>");
-
-            $("body").append(form);
-
-            form.append($("<input type='hidden' name='sessionDiv' value='" + $.comm.getGlobalVar("sessionDiv") + "' >"));
-            form.attr("method", "post");
-            form.attr("action", url).submit();
-        },
         /***
          * 상세 페이지에서 목록 페이지로 (뒤로) 이동시 사용
          *  - 이전 페이지로 이동
@@ -761,7 +751,11 @@
             else if (event.srcElement) return event.srcElement;
             return null;
         },
-        getAjaxData: function (obj, actNm) {
+        getAjaxData: function (obj, actNm, isAjaxConvert) {
+            if(isAjaxConvert == true){
+                return obj;
+            }
+
             var d = {};
             if(!this.isNull(obj)){
                 if ($.type(obj) == 'object') {
