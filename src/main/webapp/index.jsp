@@ -11,7 +11,8 @@
 <head>
     <title>Seong`s Framework</title>
     <script>
-        location.href = "jspView.do?jsp=main/main";
+        //location.href = "jspView.do?jsp=main/main";
+        location.href = "jspView.do?jsp=login/loginAdmin";
     </script>
 </head>
 <body>
