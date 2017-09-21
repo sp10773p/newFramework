@@ -12,6 +12,12 @@
     <%@ include file="/WEB-INF/include/include-main-define.jspf" %>
     <script>
         $(function(){
+
+            $.comm.setGlobalVar("sessionDiv", "${sessionDiv}"); // 사이트 구분
+            $.comm.setGlobalVar("GLOBAL_LOGIN_USER_ID", "${userId}"); // 사용자 ID
+
+
+
             var url = "jspView.do?jsp=adm/sys/admList";
             $('.content').load(url);
         })
