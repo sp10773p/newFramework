@@ -6,6 +6,22 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <script src="js/common.js"></script>
+    <script>
+        $(function(){
+            var params = {
+                "menuDiv": "ADM"
+            };
+
+            $.comm.send('menu/menuList.do', params, function(data){
+                console.log(data.toString());
+            })
+        })
+    </script>
+</head>
+<body>
 <aside class="main-sidebar">
 
     <!-- sidebar: style can be found in sidebar.less -->
@@ -45,8 +61,8 @@
                 <a href="#">
                     <i class="fa fa-cogs"></i> <span>시스템관리</span>
                     <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
                 </a>
                 <ul class="treeview-menu">
                     <li class="active"><a href="#"><i class="fa fa-circle-o"></i>사용자 관리</a></li>
@@ -85,3 +101,5 @@
     </section>
     <!-- /.sidebar -->
 </aside>
+</body>
+</html>

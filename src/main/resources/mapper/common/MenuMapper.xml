@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="menu">
+	<select	id="selectMenuList" parameterType="map" resultType="map">
+      <![CDATA[
+			SELECT
+			       LEVEL AS LVL , A.*
+			FROM
+            (
+                SELECT
+	                      A.MENU_ID
+	                    , A.PMENU_ID
+	                    , A.MENU_NM
+	                    , A.MENU_DC
+	                    , A.MENU_PATH
+	                    , A.MENU_URL
+	                    , A.DASH_PATH
+	                    , A.DASH_URL
+	                    , A.MENU_LEVEL
+	                    , A.MENU_DIV
+	                    , A.LINK_YN
+	                    , A.MENU_ORDR
+	                    , A.REG_ID
+	                    , A.REG_DTM
+	                    , A.MOD_ID
+	                    , A.MOD_DTM
+	                    , B.AUTH_CD
+                FROM 	CMM_MENU_MAS A
+                , 		CMM_MENU_AUTH B
+                , 		CMM_AUTH C
+                WHERE 	1 = 1
+                AND 	A.MENU_ID = B.MENU_ID
+                AND 	B.AUTH_CD = C.AUTH_CD
+                AND 	A.LINK_YN = 'Y'
+                AND 	C.USE_YN = 'Y'
+                AND 	B.AUTH_CD = #{authCd}
+                AND 	A.MENU_DIV = #{menuDiv}
+            ) A
+            WHERE 	1 = 1
+            START 	WITH A.MENU_ID = #{menuId}
+            CONNECT BY PRIOR A.MENU_ID = A.PMENU_ID
+            ORDER 	SIBLINGS BY A.MENU_ORDR
+		]]>
+    </select>
+	<select	id="selectCmmMenuTree" parameterType="map" resultType="map">
+		SELECT  LEVEL AS LVL
+				, A.MENU_ID 	                            /*메뉴ID*/
+				, A.PMENU_ID                               /*상위메뉴코드*/
+				, A.MENU_NM                                /*메뉴명*/
+				, A.MENU_DC                                /*메뉴설명*/
+				, A.MENU_PATH                              /*메뉴경로*/
+				, A.MENU_URL                               /*메뉴URL*/
+				, A.MENU_LEVEL                             /*메뉴레벨*/
+				, A.MENU_DIV                               /*메뉴구분*/
+				, A.LINK_YN                                /*연결여부*/
+				, A.MENU_ORDR                              /*메뉴순서*/
+				, A.REG_ID                                 /*최초입력자ID*/
+				, A.REG_DTM                               /*최초입력일시*/
+				, A.MOD_ID                                 /*최종수정자ID*/
+				, A.MOD_DTM                               /*최종수정일시*/
+				, A.DASH_PATH
+				, A.DASH_URL
+		FROM 	CMM_MENU_MAS A
+		WHERE 	1 = 1
+		<if test="P_MENU_DIV != null and P_MENU_DIV != ''">
+			AND (MENU_LEVEL = 0  OR MENU_DIV = #{P_MENU_DIV})
+		</if>
+		START 	WITH A.MENU_LEVEL = 0
+		CONNECT BY PRIOR A.MENU_ID = A.PMENU_ID
+		ORDER SIBLINGS BY A.MENU_ORDR
+	</select>
+
+	<select	id="selectUsrMenuList" parameterType="map" resultType="menuModel">
+			SELECT
+			       LEVEL AS LVL
+			     , '' AS NAVIGATOR
+                 , A.MENU_ID 	  AS menuId     /*메뉴ID*/
+			     , A.PMENU_ID     AS pmenuId    /*상위메뉴코드*/
+			     , A.MENU_NM      AS menuNm     /*메뉴명*/
+			     , A.MENU_DC      AS menuDc     /*메뉴설명*/
+			     , A.MENU_PATH    AS menuPath   /*메뉴경로*/
+			     , A.MENU_URL     AS menuUrl    /*메뉴URL*/
+			     , A.MENU_LEVEL   AS menuLevel  /*메뉴레벨*/
+			     , A.MENU_DIV     AS menuDiv    /*메뉴구분*/
+			     , A.LINK_YN      AS linkYn     /*연결여부*/
+			     , A.MENU_ORDR    AS menuOrdr   /*메뉴순서*/
+			     , A.REG_ID       AS regId      /*최초입력자ID*/
+			     , A.REG_DTM      AS regDtm     /*최초입력일시*/
+			     , A.MOD_ID       AS modId      /*최종수정자ID*/
+			     , A.MOD_DTM      AS modDtm     /*최종수정일시*/
+                 , A.AUTH_CD      AS authCd     /*권한코드*/
+                 , A.DASH_PATH    AS dashPath
+                 , A.DASH_URL     AS dashUrl
+			FROM
+            (
+                SELECT
+	                      A.MENU_ID
+	                    , A.PMENU_ID
+	                    , A.MENU_NM
+	                    , A.MENU_DC
+	                    , A.MENU_PATH
+	                    , A.MENU_URL
+	                    , A.MENU_LEVEL
+	                    , A.MENU_DIV
+	                    , A.LINK_YN
+	                    , A.MENU_ORDR
+	                    , A.REG_ID
+	                    , A.REG_DTM
+	                    , A.MOD_ID
+	                    , A.MOD_DTM
+	                    , A.DASH_PATH
+	                    , A.DASH_URL
+	                    , B.AUTH_CD
+                FROM 	CMM_MENU_MAS A
+                , 		CMM_MENU_AUTH B
+                , 		CMM_AUTH C
+                WHERE 	1 = 1
+                AND 	A.MENU_ID = B.MENU_ID
+                AND 	B.AUTH_CD = C.AUTH_CD
+                /*AND 	A.LINK_YN = 'Y'*/
+                AND 	C.USE_YN = 'Y'
+                AND 	B.AUTH_CD = #{AUTH_CD}
+                AND     A.MENU_DIV = #{MENU_DIV}
+            ) A
+            WHERE 	1 = 1
+            START 	WITH A.MENU_LEVEL = 1
+            CONNECT BY PRIOR A.MENU_ID = A.PMENU_ID
+            ORDER 	SIBLINGS BY A.MENU_ORDR
+    </select>
+
+	<select id="selectCmmBtnAuth" parameterType="string" resultType="map">
+		SELECT MENU_ID, BTN_ID
+		  FROM (
+				SELECT A.MENU_ID, A.BTN_ID, A.BTN_NM, B.BTN_ID AS EXISTS_BTN_ID
+				  FROM CMM_MENU_BTN A,
+					   (SELECT AUTH.*
+						  FROM CMM_MENU_BTN_AUTH AUTH, CMM_USER U
+						 WHERE AUTH.AUTH_CD = U.AUTH_CD
+						   AND U.USER_ID = #{USER_ID}
+					   ) B
+				 WHERE A.MENU_ID = B.MENU_ID(+)
+				   AND A.BTN_ID = B.BTN_ID(+)
+				)
+		 WHERE EXISTS_BTN_ID IS NULL
+		ORDER BY MENU_ID
+	</select>
+
+	<select	id="selectCmmPmenu" parameterType="map" resultType="map">
+		SELECT ROW_NUMBER() OVER (ORDER BY MENU_ID) RNUM
+		, MENU_ID
+		, PMENU_ID
+		, MENU_NM
+		, MENU_DC
+		, MENU_PATH
+		, MENU_URL
+		, MENU_LEVEL
+		, MENU_DIV
+		, LINK_YN
+		, MENU_ORDR
+		FROM CMM_MENU_MAS
+		WHERE MENU_URL IS NULL
+		AND LINK_YN = 'Y'
+		AND (MENU_DIV = #{MENU_DIV} OR MENU_DIV IS NULL)
+		<if test="MENU_NM != null and MENU_NM != ''">
+			AND MENU_NM LIKE '%'||#{MENU_NM}||'%'
+		</if>
+		ORDER BY MENU_ID
+	</select>
+
+	<select	id="selectMenuDetail" parameterType="map" resultType="map">
+		SELECT MENU_ID
+				, PMENU_ID
+				, MENU_NM
+				, MENU_DC
+				, MENU_PATH
+				, MENU_URL
+				, MENU_LEVEL
+				, MENU_DIV
+				, LINK_YN
+				, MENU_ORDR
+				, DASH_PATH
+				, DASH_URL
+		   FROM CMM_MENU_MAS
+		  WHERE MENU_ID = #{MENU_ID}
+	</select>
+
+	<select id="selectCmmMenuCount" parameterType="map" resultType="int">
+		<![CDATA[
+      	 	SELECT  COUNT(*)
+         	  FROM  CMM_MENU_MAS
+         	 WHERE  MENU_ID = #{MENU_ID}
+    	]]>
+	</select>
+
+	<select id="selectNewMenuId" parameterType="map" resultType="string">
+		SELECT MAX(MENU_ID)+1
+		  FROM CMM_MENU_MAS
+		 WHERE MENU_ID LIKE (SELECT TO_NUMBER(MENU_LEVEL)+1
+		 					 	 FROM CMM_MENU_MAS
+		 					    WHERE MENU_ID = #{PMENU_ID})||'%'
+	</select>
+
+	<insert id="insertCmmMenu" parameterType="map">
+		INSERT INTO CMM_MENU_MAS(
+			MENU_ID
+			, PMENU_ID
+			, MENU_NM
+			, MENU_DC
+			, MENU_PATH
+			, MENU_URL
+			, MENU_LEVEL
+			, MENU_DIV
+			, LINK_YN
+			, MENU_ORDR
+			, REG_ID
+			, REG_DTM
+			, MOD_ID
+			, MOD_DTM
+			, DASH_PATH
+			, DASH_URL
+		)VALUES(
+			#{NEW_MENU_ID}
+			, #{PMENU_ID:VARCHAR }
+			, #{MENU_NM:VARCHAR }
+			, #{MENU_DC:VARCHAR }
+			, #{MENU_PATH:VARCHAR }
+			, #{MENU_URL:VARCHAR }
+			, (SELECT TO_NUMBER(MENU_LEVEL)+1 FROM CMM_MENU_MAS WHERE MENU_ID = #{PMENU_ID})
+			, #{MENU_DIV:VARCHAR }
+			, #{LINK_YN:VARCHAR }
+			<if test="MENU_ORDR == null or MENU_ORDR == ''">
+				, (SELECT NVL(MAX(MENU_ORDR), 0)+10 FROM CMM_MENU_MAS WHERE PMENU_ID = #{PMENU_ID} AND MENU_DIV = #{MENU_DIV})
+			</if>
+			<if test="MENU_ORDR != null and MENU_ORDR != ''">
+				, #{MENU_ORDR}
+			</if>
+			, #{REG_ID}
+			, SYSDATE
+			, #{MOD_ID}
+			, SYSDATE
+			, #{DASH_PATH:VARCHAR }
+			, #{DASH_URL:VARCHAR }
+		)
+	</insert>
+
+	<update id="updateCmmMenuBtnAuth" parameterType="map">
+		UPDATE CMM_MENU_BTN_AUTH
+		    SET MENU_ID = #{NEW_MENU_ID}
+				, MOD_ID = #{MOD_ID}
+				, MOD_DTM = SYSDATE
+		WHERE MENU_ID = #{MENU_ID}
+	</update>
+
+	<update id="updateCmmMenuAuth" parameterType="map">
+		UPDATE CMM_MENU_AUTH
+		   SET  MENU_ID = #{NEW_MENU_ID}
+				, MOD_ID = #{MOD_ID}
+				, MOD_DTM = SYSDATE
+		WHERE MENU_ID = #{MENU_ID}
+	</update>
+
+	<delete id="deleteCmmMenu" parameterType="map">
+		DELETE FROM CMM_MENU_MAS
+		WHERE MENU_ID = #{MENU_ID}
+	</delete>
+
+	<update id="updateCmmMenu" parameterType="map">
+		UPDATE CMM_MENU_MAS A
+		SET   PMENU_ID   = #{PMENU_ID}
+				, MENU_NM    = #{MENU_NM:VARCHAR}
+				, MENU_DC    = #{MENU_DC:VARCHAR}
+				, MENU_PATH  = #{MENU_PATH:VARCHAR}
+				, MENU_URL   = #{MENU_URL:VARCHAR}
+				, MENU_DIV   = #{MENU_DIV:VARCHAR}
+				, LINK_YN    = #{LINK_YN:VARCHAR}
+				, MENU_LEVEL = (SELECT TO_NUMBER(MENU_LEVEL)+1 FROM CMM_MENU_MAS WHERE MENU_ID = #{PMENU_ID})
+			<if test='IS_PMENU_DIFF == "T"'>
+				, MENU_ORDR = (SELECT NVL(MAX(MENU_ORDR), 0)+10 FROM CMM_MENU_MAS WHERE PMENU_ID = #{PMENU_ID} AND MENU_DIV = #{MENU_DIV})
+			</if>
+			<if test='IS_PMENU_DIFF == "F"'>
+				, MENU_ORDR = #{MENU_ORDR}
+			</if>
+				, MOD_ID     = #{MOD_ID}
+				, MOD_DTM    = SYSDATE
+				, DASH_PATH  = #{DASH_PATH}
+				, DASH_URL   = #{DASH_URL}
+		WHERE MENU_ID = #{MENU_ID}
+	</update>
+
+	<delete id="deleteCmmMenuBtnAll" parameterType="map">
+		DELETE FROM CMM_MENU_BTN
+		WHERE MENU_ID = #{MENU_ID}
+	</delete>
+
+	<delete id="deleteCmmMenuBtnAuthAll" parameterType="map">
+		DELETE FROM CMM_MENU_BTN_AUTH
+		WHERE MENU_ID = #{MENU_ID}
+	</delete>
+
+	<delete id="deleteCmmMenuAuth" parameterType="map">
+		DELETE FROM CMM_MENU_AUTH
+		WHERE MENU_ID = #{MENU_ID}
+	</delete>
+
+	<delete id="deleteCmmMenuTree" parameterType="map">
+		DELETE FROM CMM_MENU_MAS
+		  WHERE MENU_ID IN (
+							SELECT MENU_ID
+							  FROM CMM_MENU_MAS A
+							 WHERE 1 = 1
+							 START 	WITH A.MENU_ID = #{MENU_ID}
+							CONNECT BY PRIOR A.MENU_ID = A.PMENU_ID
+							)
+	</delete>
+
+	<select	id="selectCmmMenuBtn" parameterType="map" resultType="map">
+		SELECT MENU_ID
+				, BTN_ID
+				, BTN_NM
+	       FROM CMM_MENU_BTN
+	      WHERE MENU_ID = #{MENU_ID}
+	</select>
+
+
+	<select id="selectCmmMenuBtnCount" parameterType="map" resultType="int">
+		<![CDATA[
+      	 	SELECT  COUNT(*)
+         	  FROM  CMM_MENU_BTN
+         	 WHERE  MENU_ID = #{MENU_ID}
+         	   AND  BTN_ID = #{BTN_ID}
+    	]]>
+	</select>
+
+	<insert id="insertCmmMenuBtn" parameterType="map">
+		  INSERT INTO CMM_MENU_BTN(
+				MENU_ID
+				, BTN_ID
+				, BTN_NM
+				, REG_ID
+				, REG_DTM
+				, MOD_ID
+				, MOD_DTM
+		  )VALUES(
+		  		#{MENU_ID:VARCHAR }
+				, #{BTN_ID:VARCHAR }
+				, #{BTN_NM:VARCHAR }
+				, #{REG_ID:VARCHAR }
+				, SYSDATE
+				, #{MOD_ID:VARCHAR }
+				, SYSDATE
+		  )
+	</insert>
+
+	<delete id="deleteCmmMenuBtn" parameterType="map">
+		DELETE FROM CMM_MENU_BTN
+		 WHERE MENU_ID = #{MENU_ID}
+		   AND  BTN_ID = #{BTN_ID}
+	</delete>
+
+	<update id="updateCmmMenuBtn" parameterType="map">
+		UPDATE CMM_MENU_BTN
+		   SET  BTN_NM		= #{BTN_NM}
+				, MOD_ID	= #{MOD_ID}
+				, MOD_DTM	= SYSDATE
+		 WHERE MENU_ID = #{MENU_ID}
+		   AND  BTN_ID = #{BTN_ID}
+	</update>
+
+
+	<delete id="deleteCmmMenuBtnAuth" parameterType="map">
+		DELETE FROM CMM_MENU_BTN_AUTH
+		WHERE MENU_ID = #{MENU_ID}
+		AND  BTN_ID = #{BTN_ID}
+	</delete>
+
+	<select	id="selectMobileMenuList" parameterType="map" resultType="map">
+		SELECT	  A.MENU_ID
+				, A.PMENU_ID
+				, A.MENU_NM
+				, A.MENU_PATH
+				, A.MENU_URL
+				, A.MENU_LEVEL
+				, A.LINK_YN
+		FROM 	CMM_MENU_MAS A
+		, 		CMM_MENU_AUTH B
+		, 		CMM_AUTH C
+		WHERE 	A.MENU_ID = B.MENU_ID
+		AND 	B.AUTH_CD = C.AUTH_CD
+		AND 	C.USE_YN = 'Y'
+		AND 	B.AUTH_CD = #{SSauthCd}
+		AND 	A.MENU_DIV = 'S'
+	</select>
+
+</mapper>

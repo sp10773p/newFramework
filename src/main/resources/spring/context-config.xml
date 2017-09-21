@@ -13,14 +13,14 @@
 	</beans>
 	<!-- // 개발 설정 -->
 	<!-- 테스트 서버 설정 // -->
-	<beans profile="development">
+	<!--<beans profile="development">
 		<util:properties id="config" location="classpath:config/development-config.xml"/>
-	</beans>
+	</beans>-->
 	<!-- // 테스트 서버 설정 -->
 	<!-- 운영 서버 설정 // -->
-	<beans profile="production">
+	<!--<beans profile="production">
 		<util:properties id="config" location="classpath:config/production-config.xml"/>
-	</beans>
+	</beans>-->
 	<!-- // 운영 서버 설정 -->
 
 </beans>

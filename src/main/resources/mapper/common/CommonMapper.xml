@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common">
+    <select	id="getMessageList" resultType="map">
+      SELECT TYPE, CODE, MESSAGE
+        FROM CMM_MESSAGE
+       WHERE USE_YN = 'Y'
+    </select>
+
+    <select	id="getMessage" parameterType="string" resultType="string">
+        SELECT MESSAGE
+          FROM CMM_MESSAGE
+         WHERE TYPE||CODE = #{CODE}
+           AND USE_YN = 'Y'
+    </select>
+
+    <insert id="insertAccessLog" parameterType="accessLogModel">
+        INSERT INTO CMM_LOG(SID, SESSION_ID, LOG_DTM, LOG_DIV, USER_ID, LOGIN_IP, SCREEN_ID, SCREEN_NM, API_ID, API_KEY, DETAIL_CNT, RMK, URI, PARAM
+        )VALUES(#{sid}, #{sessionId}, SYSDATE,<if test="logDiv == null or logDiv == ''">(SELECT MENU_DIV FROM CMM_MENU_MAS WHERE MENU_ID = #{screenId}),</if><if test="logDiv != null and logDiv != ''">#{logDiv},</if>SUBSTR(#{userId}, 1, 35), #{loginIp}, #{screenId}, #{screenNm}, #{apiId}, #{apiKey}, #{detailCnt}, #{rmk}, #{uri}, #{param:CLOB})
+    </insert>
+
+    <insert id="insertAutoLogoutLog" parameterType="map">
+        INSERT INTO CMM_LOG(SID, SESSION_ID, LOG_DTM, LOG_DIV, USER_ID, LOGIN_IP, SCREEN_ID, SCREEN_NM)
+        SELECT #{SID}, #{SESSION_ID}, SYSDATE, LOG_DIV, USER_ID, LOGIN_IP, 'LOGOUT', '로그아웃'
+          FROM CMM_LOG
+         WHERE SID > TO_CHAR(SYSDATE - (#{SESSION_TIMEOUT} * (1/( 60* 24))), 'YYYYMMDDHH24MISS')
+           AND SCREEN_ID != 'LOGOUT'
+           AND SESSION_ID NOT IN (
+                                  SELECT LOGIN.SESSION_ID
+                                    FROM CMM_LOG LOGIN LEFT JOIN CMM_LOG LOGOUT ON LOGIN.SESSION_ID = LOGOUT.SESSION_ID
+                                    WHERE LOGIN.SID > TO_CHAR(SYSDATE - (#{SESSION_TIMEOUT} * (1/(60* 24))), 'YYYYMMDDHH24MISS')
+                                      AND LOGOUT.SID > TO_CHAR(SYSDATE - (#{SESSION_TIMEOUT} * (1/( 60* 24))), 'YYYYMMDDHH24MISS')
+                                      AND LOGIN.SCREEN_ID != 'LOGOUT'
+                                      AND LOGOUT.SCREEN_ID = 'LOGOUT'
+                                )
+          AND SESSION_ID = #{SESSION_ID}
+          AND LOG_DIV IS NOT NULL
+          AND USER_ID IS NOT NULL
+          AND ROWNUM = 1
+    </insert>
+
+    <select	id="selectCommCode" parameterType="map" resultType="map">
+        <include refid="common.commonCode"/>
+    </select>
+
+    <select	id="selectCommCodeForCombo" parameterType="map" resultType="map">
+        SELECT B.CODE
+                , B.CODE_NM
+                , '['||B.CODE||'] '||B.CODE_NM AS COMPLX_CODE_NM
+        FROM CMM_STD_CLASS A, CMM_STD_CODE B
+        WHERE A.CLASS_ID = B.CLASS_ID
+        <if test="CLASS_ID != null and CLASS_ID != ''">
+            AND B.CLASS_ID = #{CLASS_ID}
+        </if>
+        <if test="CODE != null and CODE != ''">
+            AND B.CODE = #{CODE}
+        </if>
+        <if test="LIKE_CODE != null and LIKE_CODE != ''">
+            AND B.CODE LIKE '%'||#{LIKE_CODE}||'%'
+        </if>
+        <if test="LIKE_NAME != null and LIKE_NAME != ''">
+            AND B.CODE_NM LIKE '%'||#{LIKE_NAME}||'%'
+        </if>
+        AND A.USE_CHK = 'Y'
+        AND B.USE_CHK = 'Y'
+        ORDER BY B.SEQ
+    </select>
+    
+    <select	id="selectCommCodesForCombos" parameterType="map" resultType="map">
+    	SELECT 
+    		*
+    	FROM 
+		<foreach collection="CODES_INFO"  item="item" index="index" open="(" separator=" UNION " close=")">
+			SELECT 
+				A.CLASS_ID, B.CODE, B.CODE_NM, '['||B.CODE||'] '||B.CODE_NM AS COMPLX_CODE_NM, B.SEQ
+	        FROM 
+	        	CMM_STD_CLASS A, CMM_STD_CODE B
+        	WHERE 
+        		A.CLASS_ID = B.CLASS_ID
+        		AND DECODE(#{item.CLASS_ID}, NULL, B.CLASS_ID, #{item.CLASS_ID}) = B.CLASS_ID
+		        AND A.USE_CHK = 'Y'
+		        AND B.USE_CHK = 'Y'
+		</foreach>
+		ORDER BY CLASS_ID, SEQ               
+    </select>
+
+    <select	id="selectCommCodeRefInfo" parameterType="map" resultType="map">
+        SELECT * FROM CMM_STD_CLASS
+         WHERE CLASS_ID = #{CLASS_ID}
+    </select>
+
+    <select	id="selectCommCodePagingList" parameterType="map" resultType="map">
+        <include refid="common.commonCode"/>
+    </select>
+
+    <sql id="pagingPre">
+        <![CDATA[
+   			SELECT
+			    AAA.*
+			FROM(
+			    SELECT
+			        COUNT(*) OVER() AS TOTAL_COUNT,
+			        AA.*
+			    FROM(
+ 		]]>
+    </sql>
+
+    <sql id="pagingPost">
+        <![CDATA[
+ 			 	) AA
+			) AAA
+			WHERE
+			    AAA.RNUM BETWEEN #{START} AND #{END}
+ 		]]>
+    </sql>
+
+    <sql id="commonCode">
+        SELECT  ROW_NUMBER() OVER (ORDER BY B.SEQ) RNUM
+                , B.CLASS_ID
+                , B.CODE
+                , B.SEQ
+                , B.CODE_NM
+                , '['||B.CODE||'] '||B.CODE_NM AS COMPLX_CODE_NM
+                , B.CODE_SHT
+                , B.USE_CHK
+                , B.USER_REF1
+                , B.USER_REF2
+                , B.USER_REF3
+                , B.USER_REF4
+                , B.USER_REF5
+                , B.REG_ID
+                , TO_CHAR(B.REG_DTM, 'YYYY-MM-DD HH24:MI:SS') AS REG_DTM
+                , TO_CHAR(B.MOD_DTM, 'YYYY-MM-DD HH24:MI:SS') AS MOD_DTM
+                , B.MOD_ID
+      FROM CMM_STD_CLASS A, CMM_STD_CODE B
+     WHERE A.CLASS_ID = B.CLASS_ID
+        <if test="CLASS_ID != null and CLASS_ID != ''">
+          AND B.CLASS_ID = #{CLASS_ID}
+        </if>
+        <if test="CODE != null and CODE != ''">
+          AND B.CODE = #{CODE}
+        </if>
+        <if test="LIKE_CODE != null and LIKE_CODE != ''">
+          AND B.CODE LIKE '%'||#{LIKE_CODE}||'%'
+        </if>
+        <if test="LIKE_NAME != null and LIKE_NAME != ''">
+          AND B.CODE_NM LIKE '%'||#{LIKE_NAME}||'%'
+        </if>
+        <if test="SEARCH_TXT1 != null and SEARCH_TXT1 != ''">
+            <if test="SEARCH_COL1 == 'CODE'">
+                AND B.CODE LIKE '%'||#{SEARCH_TXT1}||'%'
+            </if>
+            <if test="SEARCH_COL1 == 'CODE_NM'">
+                AND B.CODE_NM LIKE '%'||#{SEARCH_TXT1}||'%'
+            </if>
+        </if>
+          AND A.USE_CHK = 'Y'
+          AND B.USE_CHK = 'Y'
+        ORDER BY B.SEQ
+    </sql>
+
+    <sql id="commonCodeName">
+        SELECT MAX(CODE_NM) AS CODE_NM FROM CMM_STD_CODE
+         WHERE USE_CHK = 'Y'
+    </sql>
+
+    <select	id="selectUserIpAccess" resultType="string" parameterType="string">
+        SELECT IP
+          FROM  CMM_IP_ACCESS A
+         WHERE USER_ID = #{USER_ID}
+           AND AUTH_YN = 'Y'
+    </select>
+
+    <select	id="selectLogList" parameterType="map" resultType="map">
+        SELECT ROW_NUMBER() OVER (ORDER BY SID DESC) RNUM,
+                SID,
+                TO_CHAR(LOG_DTM, 'YYYY-MM-DD HH24:MI:SS') AS LOG_DTM,
+                LOG_DIV,
+                USER_ID,
+                LOGIN_IP,
+                SCREEN_ID,
+                SCREEN_NM,
+                RMK,
+                URI,
+                PARAM
+          FROM CMM_LOG
+         WHERE LOG_DIV IN ('W', 'M')
+            AND LOG_DTM BETWEEN TO_DATE(#{F_LOG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_LOG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+            AND USER_ID = #{USER_ID}
+            AND SCREEN_ID = #{SCREEN_ID}
+            <if test="URI != null and URI != ''">
+                AND URI LIKE '%'||#{URI}||'%'
+            </if>
+            <if test="SCREEN_NM != null and SCREEN_NM != ''">
+                AND SCREEN_NM LIKE '%'||#{SCREEN_NM}||'%'
+            </if>
+            <if test="RMK != null and RMK != ''">
+                AND RMK LIKE '%'||#{RMK}||'%'
+            </if>
+            <if test="ALL_PARAM != null and ALL_PARAM != ''">
+                AND PARAM LIKE '%'||#{ALL_PARAM}||'%'
+            </if>
+            AND URI NOT LIKE '/jspView.do'||'%'
+        ORDER BY SID DESC
+    </select>
+
+    <insert	id="inesrtTpId" parameterType="map">
+        <selectKey resultType="string" keyProperty="IDENTIFY_ID" order="BEFORE">
+        SELECT #{TYPE}||LPAD(NVL(IDENTIFY_ID, '1'), 7, '0')
+          FROM (
+                SELECT MAX(TO_NUMBER(SUBSTR(IDENTIFY_ID, 4)))+1 AS IDENTIFY_ID
+                  FROM CMM_IDENTIFIER
+                 WHERE TYPE = #{TYPE}
+                )
+        </selectKey>
+        INSERT INTO CMM_IDENTIFIER(
+            TYPE
+            , USER_ID
+            , IDENTIFY_ID
+            , REG_ID
+            , REG_DTM
+            , MOD_ID
+            , MOD_DTM
+        )VALUES(
+            #{TYPE}
+            , #{USER_ID}
+            , #{IDENTIFY_ID}
+            , #{ADM_SESSION.userId}
+            , SYSDATE
+            , #{ADM_SESSION.userId}
+            , SYSDATE
+        )
+    </insert>
+
+    <select	id="selectDocIdCount" parameterType="string" resultType="int">
+         SELECT COUNT(*) AS EXIST_CNT
+           FROM DOCID
+          WHERE DOCNM = #{value}
+    </select>
+
+    <insert	id="insertUTHDocid" parameterType="string">
+        INSERT INTO DOCID(DOCNM, RGSTTM, SQN)
+        VALUES(#{value}, SYSDATE, 1)
+    </insert>
+
+    <select id="selectUTHDocidForUpdate" parameterType="map" resultType="int">
+        SELECT CASE WHEN TO_CHAR(RGSTTM, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD') THEN
+                  SQN ELSE 0 END SQN
+           FROM DOCID WHERE DOCNM = #{DOCNM}
+        FOR UPDATE
+    </select>
+
+    <update	id="updateUTHDocid" parameterType="map">
+        UPDATE DOCID
+            SET SQN = #{SQN}, RGSTTM = SYSDATE
+         WHERE DOCNM = #{DOCNM}
+    </update>
+
+    <select	id="selectEpTranorgCount" parameterType="map" resultType="int">
+          SELECT COUNT(*)
+             FROM EPCS.EP_TRANORG
+            WHERE PRTID = #{PRTID}
+              AND SENREVCD = #{SENREVCD}
+    </select>
+
+    <update	id="updateEpTranorg" parameterType="map">
+          UPDATE EPCS.EP_TRANORG
+             SET ORGNM        = #{ORGNM}
+                , CEONM       = #{CEONM}
+                , PRTNM       = #{PRTNM}
+                , ADDR1       = #{ADDR1}
+                , ADDR2       = #{ADDR2}
+                , TELNM       = #{TELNM}
+                , FAXNM       = #{FAXNM}
+                , PERCHANM    = #{PERCHANM}
+                , PERCHAPRT   = #{PERCHAPRT}
+                , POSITION   = #{POSITION}
+                , PERCHATEL   = #{PERCHATEL}
+                , PERCHAFAX   = #{PERCHAFAX}
+                , SENREVSUBCD = #{SENREVSUBCD}
+                , EMAIL       = #{EMAIL}
+                , RGSTTM      = SYSDATE
+                , RGSTID      = #{RGSTID}
+                , UNBLMTMRK   = #{UNBLMTMRK}
+                , APLCTSIGN   = #{APLCTSIGN}
+                , USEYN       = #{USEYN}
+                , REG_SYSTEM  = #{REG_SYSTEM}
+          WHERE PRTID = #{PRTID}
+            AND SENREVCD = #{SENREVCD}
+    </update>
+
+    <insert	id="insertEpTranorg" parameterType="map">
+        INSERT INTO EPCS.EP_TRANORG(
+            PRTID
+            , REFNUM
+            , ORGNM
+            , CEONM
+            , PRTNM
+            , ADDR1
+            , ADDR2
+            , ADDR3
+            , TELNM
+            , FAXNM
+            , PERCHANM
+            , PERCHAPRT
+            , POSITION
+            , PERCHATEL
+            , PERCHAFAX
+            , SENREVCD
+            , SENREVSUBCD
+            , EMAIL
+            , REMARK
+            , TRANSDATE
+            , CNFRMLST
+            , RGSTTM
+            , RGSTID
+            , UNBLMTMRK
+            , APLCTSIGN
+            , USEYN
+            , REG_SYSTEM
+        )VALUES(
+            #{PRTID}
+            , #{REFNUM}
+            , #{ORGNM}
+            , #{CEONM}
+            , #{PRTNM}
+            , #{ADDR1}
+            , #{ADDR2}
+            , NULL
+            , #{TELNM}
+            , #{FAXNM}
+            , #{PERCHANM}
+            , #{PERCHAPRT}
+            , #{POSITION}
+            , #{PERCHATEL}
+            , #{PERCHAFAX}
+            , #{SENREVCD}
+            , #{SENREVSUBCD}
+            , #{EMAIL}
+            , NULL
+            , NULL
+            , NULL
+            , SYSDATE
+            , #{RGSTID}
+            , #{UNBLMTMRK}
+            , #{APLCTSIGN}
+            , #{USEYN}
+            , #{REG_SYSTEM}
+        )
+    </insert>
+
+    <select	id="selectEpOrgmngCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM EPCS.EP_ORGMNG
+         WHERE PRTID = #{PRTID}
+    </select>
+
+    <update	id="updateEpOrgmng" parameterType="map">
+        UPDATE EPCS.EP_ORGMNG
+        SET     ORGNM			= #{ORGNM},          /* ORGNM 상호                                        */
+                 CEONM			= #{CEONM},          /* CEONM 대표                                        */
+                 PRTNM			= #{PRTNM},          /* PRTNM 사업자번호                                  */
+                 ADDR1			= #{ADDR1},          /* ADDR1 주소1                                       */
+                 ADDR2			= #{ADDR2},          /* ADDR2 주소2                                       */
+                 ADDR3			= #{ADDR3},          /* ADDR3 주소3                                       */
+                 TELNM			= #{TELNM},          /* TELNM 전화번호                                    */
+                 FAXNM			= #{FAXNM},          /* FAXNM 팩스번호                                    */
+                 PERCHANM		= #{PERCHANM},       /* PERCHANM  담당자이름                              */
+                 PERCHAPRT		= #{PERCHAPRT},      /* PERCHAPRT 담당자부서                              */
+                 POSITION		= #{POSITION},       /* POSITION  직급                                    */
+                 PERCHATEL		= #{PERCHATEL},      /* PERCHATEL 담당자전화                              */
+                 PERCHAFAX		= #{PERCHAFAX},      /* PERCHAFAX 담당자팩스                              */
+                 EMAIL			= #{EMAIL},          /* EMAIL EMAIL                                       */
+                 CAPITAL		= #{CAPITAL},        /* CAPITAL   자본금                                  */
+                 PREYEARACTRES	= #{PREYEARACTRES},  /* PREYEARACTRES 전년도실적                          */
+                 CNFRMPRCHCNT	= #{CNFRMPRCHCNT},   /* CNFRMPRCHCNT  구매신청건수                        */
+                 CNFRMPRCHAMT	= #{CNFRMPRCHAMT},   /* CNFRMPRCHAMT  구매확인발급금액                    */
+                 REMARK			= #{REMARK},         /* REMARK    비고                                    */
+                 CNFRMLST		= #{CNFRMLST},       /* CNFRMLST  확인목록                                */
+                 RGSTTM			= SYSDATE,           /* RGSTTM    등록일시                                */
+                 RGSTID			= #{RGSTID},         /* RGSTID    */
+                 ORGGRD         = #{ORGGRD},
+                 USEYN			= #{USEYN}		     /* USEYN FLAG = Y 사용여부 사용                      */
+        WHERE PRTID = #{PRTID}
+    </update>
+
+    <insert	id="insertEpOrgmng" parameterType="map">
+    INSERT INTO EPCS.EP_ORGMNG(
+         PRTID,
+         REFNUM,
+         ORGNM,
+         CEONM,
+         PRTNM,
+         ADDR1,
+         ADDR2,
+         ADDR3,
+         TELNM,
+         FAXNM,
+         PERCHANM,
+         PERCHAPRT,
+         POSITION,
+         PERCHATEL,
+         PERCHAFAX,
+         EMAIL,
+         CAPITAL,
+         PREYEARACTRES,
+         CNFRMPRCHCNT,
+         CNFRMPRCHAMT,
+         REMARK,
+         CNFRMLST,
+         RGSTTM,
+         RGSTID,
+         ORGGRD,
+         USEYN
+    )VALUES (
+        #{PRTID},         /* PRTID 사업자등록번호                              */
+        #{REFNUM},        /* REFNUM    문서참조번호                            */
+        #{ORGNM},         /* ORGNM 상호                                        */
+        #{CEONM},         /* CEONM 대표                                        */
+        #{PRTNM},         /* PRTNM 사업자번호                                  */
+        #{ADDR1},         /* ADDR1 주소1                                       */
+        #{ADDR2},         /* ADDR2 주소2                                       */
+        #{ADDR3},         /* ADDR3 주소3                                       */
+        #{TELNM},         /* TELNM 전화번호                                    */
+        #{FAXNM},         /* FAXNM 팩스번호                                    */
+        #{PERCHANM},      /* PERCHANM  담당자이름                              */
+        #{PERCHAPRT},     /* PERCHAPRT 담당자부서                              */
+        #{POSITION},      /* POSITION  직급                                    */
+        #{PERCHATEL},     /* PERCHATEL 담당자전화                              */
+        #{PERCHAFAX},     /* PERCHAFAX 담당자팩스                              */
+        #{EMAIL},         /* EMAIL EMAIL                                       */
+        #{CAPITAL},       /* CAPITAL   자본금                                  */
+        #{PREYEARACTRES}, /* PREYEARACTRES 전년도실적                          */
+        #{CNFRMPRCHCNT},  /* CNFRMPRCHCNT  구매신청건수                        */
+        #{CNFRMPRCHAMT},  /* CNFRMPRCHAMT  구매확인발급금액                    */
+        #{REMARK},        /* REMARK    비고                                    */
+        #{CNFRMLST},      /* CNFRMLST  확인목록                                */
+        SYSDATE,          /* RGSTTM    등록일시                                */
+        #{RGSTID},        /* RGSTID                                             */
+        #{ORGGRD},        /* ORGGRD default 'SLF':자동발급 ==> 'A':수동발급	기업등급                                 */
+        #{USEYN}	      /* USEYN FLAG = Y 사용여부 사용                      */
+    )
+
+    </insert>
+
+    <select	id="selectClentInfCount" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM CLIENTINF WHERE ADMINID = #{ADMINID} AND CLNTCD = #{CLNTCD}
+    </select>
+
+    <update	id="updateClentInf" parameterType="map">
+        UPDATE CLIENTINF
+           SET CLNTMGNCD    = #{CLNTMGNCD}
+                , INOUTTYP   = #{INOUTTYP}
+                , CLNTPRTID  = #{CLNTPRTID}
+                , CLNTNM     = SUBSTRB(#{CLNTNM},0,70)
+                , TPSQN      = (SELECT SQN FROM TRADEPROMISE WHERE USERID = #{USERID} AND SNDRCVCD = #{SNDRCVCD})
+                , RGSTTM     = SYSDATE
+                , TPUSERID   = #{TPUSERID}
+                , USEYN      = #{USEYN}
+                , RGSTID     = #{RGSTID}
+         WHERE ADMINID = #{ADMINID} AND CLNTCD = #{CLNTCD}
+    </update>
+
+    <insert	id="insertClentInf" parameterType="map">
+       INSERT INTO CLIENTINF(
+            ADMINID
+            , CLNTCD
+            , CLNTMGNCD
+            , INOUTTYP
+            , CLNTPRTID
+            , CLNTNM
+            , TPSQN
+            , RGSTTM
+            , TPUSERID
+            , USEYN
+            , RGSTID
+        )VALUES(
+            #{ADMINID}
+            , #{CLNTCD}
+            , #{CLNTMGNCD}
+            , #{INOUTTYP}
+            , #{CLNTPRTID}
+            , SUBSTRB(#{CLNTNM},0,70)
+            , (SELECT SQN FROM TRADEPROMISE WHERE USERID = #{USERID} AND SNDRCVCD = #{SNDRCVCD})
+            , SYSDATE
+            , #{TPUSERID}
+            , #{USEYN}
+            , #{RGSTID}
+        )
+
+    </insert>
+
+    <select	id="selectTradePromiseCount" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM TRADEPROMISE WHERE USERID = #{USERID} AND SNDRCVCD = #{SNDRCVCD}
+    </select>
+
+    <update	id="updateTradePromise" parameterType="map">
+        UPDATE TRADEPROMISE
+        SET  OBJNM          = #{OBJNM}
+            , OBJADDR       = #{OBJADDR}
+            , OBJTEL        = #{OBJTEL}
+            , DTLSNDRCVCD   = #{DTLSNDRCVCD}
+            , UNBLMTMRK     = #{UNBLMTMRK}
+            , UNGLMTMRK     = #{UNGLMTMRK}
+            , ATHNKEY       = #{ATHNKEY}
+            , PRTNRATHRKEY  = #{PRTNRATHRKEY}
+            , XMLENCDMTHD   = #{XMLENCDMTHD}
+            , EDIENCDMTHD   = #{EDIENCDMTHD}
+            , USEDVSN       = #{USEDVSN}
+            , RGSTTM        = SYSDATE
+            , MDFTM         = SYSDATE
+            , INPUTMTHD     = #{INPUTMTHD}
+        WHERE USERID = #{USERID} AND SNDRCVCD = #{SNDRCVCD}
+    </update>
+
+    <insert	id="insertTradePromise" parameterType="map">
+        <selectKey resultType="string" keyProperty="SQN" order="BEFORE">
+            SELECT TRADEPROMISE_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TRADEPROMISE(
+            SQN
+            , USERID
+            , OBJNM
+            , OBJADDR
+            , OBJTEL
+            , SNDRCVCD
+            , DTLSNDRCVCD
+            , UNBLMTMRK
+            , UNGLMTMRK
+            , ATHNKEY
+            , PRTNRATHRKEY
+            , XMLENCDMTHD
+            , EDIENCDMTHD
+            , USEDVSN
+            , RGSTTM
+            , MDFTM
+            , INPUTMTHD
+        )VALUES(
+            #{SQN}
+            , #{USERID}
+            , #{OBJNM}
+            , #{OBJADDR}
+            , #{OBJTEL}
+            , #{SNDRCVCD}
+            , #{DTLSNDRCVCD}
+            , #{UNBLMTMRK}
+            , #{UNGLMTMRK}
+            , #{ATHNKEY}
+            , #{PRTNRATHRKEY}
+            , #{XMLENCDMTHD}
+            , #{EDIENCDMTHD}
+            , #{USEDVSN}
+            , SYSDATE
+            , SYSDATE
+            , #{INPUTMTHD}
+        )
+    </insert>
+
+    <select	id="selectDecReqCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM EXP_EXPDEC_REQ A, EXP_CUSDEC830 B
+          WHERE A.REQ_NO = B.REQ_NO(+)
+            AND B.RPT_SEQ(+) = '00'
+        <if test="BIZ_NO != null and BIZ_NO != ''">
+            AND A.EOCPARTYPARTYIDID1 = #{BIZ_NO}
+        </if>
+        <if test="APPLICANT_ID != null and APPLICANT_ID != ''">
+            AND A.RPT_MARK = #{APPLICANT_ID}
+        </if>
+           AND A.REG_DTM BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+    </select>
+
+    <select	id="selectDec830Count" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM EXP_CUSDEC830 A
+         WHERE A.RPT_SEQ = '00'
+            <if test="BIZ_NO != null and BIZ_NO !=''">
+                AND A.EXP_SDNO = #{BIZ_NO}
+            </if>
+            <if test="APPLICANT_ID != null and APPLICANT_ID != ''">
+                AND A.RPT_MARK = #{APPLICANT_ID}
+            </if>
+            <if test="STATUS != null and STATUS !=''">
+                AND A.RECE IN (${STATUS})
+            </if>
+           AND A.RPT_DAY BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS') /* 신고일자 기준 */
+    </select>
+
+    <select	id="selectDecModCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM EXP_EXPMOD_REQ A
+         WHERE 1=1
+        <if test="BIZ_NO != null and BIZ_NO !=''">
+           AND A.BIZ_NO = #{BIZ_NO}
+        </if>
+        <if test="APPLICANT_ID != null and APPLICANT_ID !=''">
+            AND A.APPLICANTPARTYORGID = #{APPLICANT_ID}
+        </if>
+           AND A.REG_DTM BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+    </select>
+
+    <select	id="selectImpReqCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM IMP_IMPREQ REQ
+               LEFT OUTER JOIN IMP_CUSDEC929 DEC ON REQ.REQ_NO = DEC.IMP_REQ_NO
+        WHERE REQ.RPT_MARK = #{APPLICANT_ID}
+          AND REQ.REG_DTM BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+    </select>
+
+    <select	id="selectShipReqCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+          FROM XPR_RECEPT_REQ
+         WHERE EXPRESS_BIZ_NO = #{BIZ_NO}
+            <if test="STATUS != null and STATUS !=''">
+              AND STATUSCD = #{STATUS}
+            </if>
+           AND REG_DTM BETWEEN TO_DATE(#{F_REG_DTM}||'000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#{T_REG_DTM}||'235959', 'YYYYMMDDHH24MISS')
+    </select>
+
+    <select	id="selectNoticeList" parameterType="map" resultType="map">
+        <![CDATA[
+        SELECT SN,
+                CASE WHEN LENGTH(TITLE) > 30 THEN
+                  SUBSTR(TITLE, 1, 30)||'..'
+                ELSE TITLE END AS TITLE,
+                TO_CHAR(NVL(MOD_DTM, REG_DTM), 'YYYY-MM-DD') AS REG_DTM
+          FROM CMM_NOTICE
+         WHERE ROWNUM <= 5
+        ORDER BY MOD_DTM DESC
+        ]]>
+    </select>
+
+    <select	id="selectNewsList" parameterType="map" resultType="map">
+        <![CDATA[
+        SELECT SN,
+                CASE WHEN LENGTH(SUBJECT) > 30 THEN
+                  SUBSTR(SUBJECT, 1, 30)||'..'
+                ELSE SUBJECT END AS SUBJECT,
+                TO_CHAR(REG_DTM, 'YYYY-MM-DD') AS REG_DTM
+          FROM CMM_NEWS
+         WHERE ROWNUM <= 3
+        ORDER BY REG_DTM DESC
+        ]]>
+    </select>
+
+
+    <select	id="selectPopupNoticeList" parameterType="map" resultType="map">
+        SELECT   A.SN
+                , A.TITLE
+                , A.CONTENTS
+                , A.POPUP_LAST_DT
+         FROM  CMM_NOTICE A
+        WHERE  A.IS_POPUP = 'Y'
+          AND  A.POPUP_LAST_DT &gt;= TO_CHAR(SYSDATE, 'YYYYMMDD')
+        ORDER  BY A.SN DESC
+    </select>
+    	
+    <insert id="insertDocId" parameterType="string">
+		INSERT INTO CMM_DOCID (
+			DOCNM, RGSTTM, SQN
+		) 
+		SELECT 
+			#{value}, TO_CHAR(SYSDATE, 'YYYYMMDD'), 0
+		FROM
+			DUAL 
+		WHERE 
+			NOT EXISTS (SELECT 1 FROM CMM_DOCID WHERE DOCNM = #{value})			
+    </insert>     
+      
+    <update id="updateDocId" parameterType="map">
+        UPDATE
+        	CMM_DOCID
+        SET
+        	RGSTTM = #{RGSTTM}, 
+        	SQN = DECODE(RGSTTM, #{RGSTTM}, SQN + 1, 1)         	
+        WHERE 
+            DOCNM = #{DOCNM}        
+    </update>   
+    
+    <select id="selectDocId" parameterType="string" resultType="int">
+		SELECT 
+			SQN
+		FROM 
+			CMM_DOCID
+		WHERE 
+			 DOCNM = #{value}     
+	</select>   
+</mapper>

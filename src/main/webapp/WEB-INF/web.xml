@@ -18,15 +18,16 @@
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
 
-    <!--<listener>
-        <listener-class>kr.pe.frame.cmm.core.service.HttpSessionListenerImpl</listener-class>
-    </listener>-->
+    <listener>
+        <listener-class>kr.pe.sdh.core.listener.HttpSessionListenerImpl</listener-class>
+    </listener>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath*:spring/context-common.xml<!--,
-            classpath*:spring/context-datasource.xml-->
+            classpath*:spring/context-common.xml,
+            classpath*:spring/context-config.xml,
+            classpath*:spring/context-datasource.xml
         </param-value>
     </context-param>
 

@@ -26,16 +26,16 @@
 	</settings>
 	
 	<typeAliases>
-		<package name="kr.pe.frame"/>
+		<package name="kr.pe.sdh"/>
 	</typeAliases>
 
 	<typeHandlers>
 		<typeHandler javaType="java.sql.Timestamp" handler="org.apache.ibatis.type.StringTypeHandler"/>
-		<typeHandler javaType="java.lang.String" handler="kr.pe.frame.cmm.core.handler.NStringTypeHandler" jdbcType="NVARCHAR" />
+		<typeHandler javaType="java.lang.String" handler="kr.pe.sdh.core.dao.handler.NStringTypeHandler" jdbcType="NVARCHAR" />
 	</typeHandlers>
 
     <plugins>
-        <plugin interceptor="kr.pe.frame.cmm.core.base.AddCommToParamInterceptor"/>
-        <plugin interceptor="kr.pe.frame.cmm.core.base.GridPagingInterceptor" />
+        <plugin interceptor="kr.pe.sdh.core.dao.AddCommToParamInterceptor"/>
+        <plugin interceptor="kr.pe.sdh.core.dao.GridPagingInterceptor" />
     </plugins>
 </configuration>

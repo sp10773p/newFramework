@@ -19,12 +19,12 @@
         <context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation" />
     </context:component-scan>
 
-    <!--<mvc:annotation-driven>
+    <mvc:annotation-driven>
         <mvc:argument-resolvers>
-            <bean class="kr.pe.frame.cmm.core.base.AjaxModelArgumentResolver"/>
+            <bean class="kr.pe.sdh.core.base.AjaxModelArgumentResolver"/>
         </mvc:argument-resolvers>
         <mvc:message-converters>
-            &lt;!&ndash; @ResponseBody로 String 처리할때 한글처리 &ndash;&gt;
+            <!-- @ResponseBody로 String 처리할때 한글처리 -->
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                 <property name="supportedMediaTypes">
                     <list>
@@ -33,7 +33,7 @@
                 </property>
             </bean>
         </mvc:message-converters>
-    </mvc:annotation-driven>-->
+    </mvc:annotation-driven>
 
     <!--<mvc:interceptors>
         <mvc:interceptor>
@@ -79,8 +79,8 @@
         </mvc:interceptor>
     </mvc:interceptors>-->
 
-    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />-->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />
 
     <!-- ============================== -->
     <!-- Spring Framework View Resolver -->
