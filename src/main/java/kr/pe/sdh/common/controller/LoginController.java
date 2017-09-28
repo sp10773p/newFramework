@@ -69,17 +69,17 @@ public class LoginController {
 	@RequestMapping(value = "/adminLogin")
 	public ModelAndView adminLogin(HttpServletRequest request) throws Exception {
 		ModelAndView mnv = new ModelAndView();
-		mnv.setViewName("login/adminLogin");
+		mnv.setViewName("main/adminLogin");
 
 		HttpSession session = request.getSession();
 
 		if(session.getAttribute(Constant.SESSION_KEY_ADM.getCode()) != null){
 			request.setAttribute("sessionDiv", Constant.ADM_SESSION_DIV.getCode());
-			mnv.setViewName(String.format("forward:%s", "main/adminMain"));
+			mnv.setViewName(String.format("forward:%s", this.mainAdminUrl));
 			return mnv;
 		}
 
-		saveAccessLog(request, Constant.ADM_SESSION_DIV.getCode(), "어드민사이트 접속");
+		saveAccessLog(request, Constant.ADM_SESSION_DIV.getCode(), "goGlobal 어드민사이트 접속");
 
 		return mnv;
 	}

@@ -13,10 +13,13 @@
     <%@ include file="/WEB-INF/include/include-main-define.jspf" %>
     <script>
         $(function(){
+<<<<<<< HEAD:src/main/webapp/WEB-INF/jsp/main/adminMain.jsp
 
             $.comm.setGlobalVar("sessionDiv"          , Constant.ADM_SESSION_DIV); // 사이트 구분
             $.comm.setGlobalVar("GLOBAL_LOGIN_USER_ID", "${userId}"); // 사용자 ID
 
+=======
+>>>>>>> parent of 73dac20... -:src/main/webapp/WEB-INF/jsp/main/main.jsp
             var url = "jspView.do?jsp=adm/sys/admList";
             $('.content').load(url);
         })
