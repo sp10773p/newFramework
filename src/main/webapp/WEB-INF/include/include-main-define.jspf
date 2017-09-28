@@ -75,15 +75,3 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-
-<script>
-    var Constant = {
-        SESSION_KEY_USR : "USR_SESSION",
-        SESSION_KEY_ADM : "ADM_SESSION",
-        SESSION_KEY_MBL : "MBL_SESSION",
-        USR_SESSION_DIV : "W", // 사용자
-        ADM_SESSION_DIV : "M", // 어드민
-        MBL_SESSION_DIV : "S" // 모바일
-    }
-
-</script>

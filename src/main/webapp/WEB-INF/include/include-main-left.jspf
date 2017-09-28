@@ -1,6 +1,4 @@
-<%@ page import="java.net.URLEncoder" %>
-<%@ page import="java.nio.charset.StandardCharsets" %>
-<%@ page import="java.net.URLDecoder" %><%--
+<%--
   Created by IntelliJ IDEA.
   User: sdh
   Date: 2017-09-15
@@ -10,26 +8,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <c:set var="session" value='<%= session.getAttribute(Constant.SESSION_KEY_ADM.getCode())%>'/>
-    <c:set var="authCd" value="${session.getAuthCd()}"/>
-
     <script src="js/common.js"></script>
     <script>
         $(function(){
             var params = {
-                "qKey"     : "menu.selectLeftMenuList",
-                "AUTH_CD"  : "${authCd}",
-                "MENU_DIV" : $.comm.getGlobalVar("sessionDiv")
+                "menuDiv": "ADM"
             };
 
-            $.comm.send('common/selectList', params, function(data){
-                $.comm.setGlobalVar(data['dataList']);
+            $.comm.send('menu/menuList.do', params, function(data){
+                console.log(data.toString());
             })
         })
-
-        function drawMenu(){
-
-        }
     </script>
 </head>
 <body>

@@ -392,38 +392,4 @@
 		AND 	A.MENU_DIV = 'S'
 	</select>
 
-	<select	id="selectLeftMenuList" parameterType="map" resultType="map">
-		SELECT * FROM (
-			SELECT   A.MENU_ID
-					, A.PMENU_ID
-					, A.MENU_NM
-					, A.MENU_DC
-					, A.MENU_PATH
-					, A.MENU_URL
-					, A.MENU_LEVEL
-					, A.MENU_DIV
-					, A.LINK_YN
-					, A.MENU_ORDR
-					, A.REG_ID
-					, A.REG_DTM
-					, A.MOD_ID
-					, A.MOD_DTM
-					, A.DASH_PATH
-					, A.DASH_URL
-					, B.AUTH_CD
-			FROM 	CMM_MENU_MAS A
-			, 		CMM_MENU_AUTH B
-			, 		CMM_AUTH C
-			WHERE 	1 = 1
-			AND 	A.MENU_ID = B.MENU_ID
-			AND 	B.AUTH_CD = C.AUTH_CD
-			AND 	C.USE_YN = 'Y'
-			AND 	B.AUTH_CD = #{AUTH_CD}
-			AND     A.MENU_DIV = #{MENU_DIV}
-			) A
-		WHERE 	1 = 1
-		START 	WITH A.MENU_LEVEL = 1
-		CONNECT BY PRIOR A.MENU_ID = A.PMENU_ID
-		ORDER 	SIBLINGS BY A.MENU_ORDR
-	</select>
 </mapper>

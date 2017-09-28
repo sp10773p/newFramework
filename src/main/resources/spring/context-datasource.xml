@@ -12,7 +12,7 @@
   	<!-- 개발자 로컬 // -->
 	<!--<beans profile="devlocal">-->
 	<bean id="dataSourceSpied" class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="java:comp/env/jdbc/ucsJNDI"/>
+		<property name="jndiName" value="java:comp/env/jdbc/ecdpJNDI"/>
 		<property name="resourceRef" value="false"/>
 	</bean>
 
