@@ -3,7 +3,7 @@ package kr.pe.sdh.common.service;
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.dao.CommonDAO;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 import kr.pe.sdh.core.service.CommonService;
 import kr.pe.sdh.core.service.MenuService;
 import kr.pe.sdh.core.util.DocUtil;
@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author 성동훈
  * @version 1.0
- * @see UsrService
+ * @see UserService
  * <p>
  * <pre>
  * == 개정이력(Modification Information) ==
@@ -37,8 +37,8 @@ import java.util.Map;
  * </pre>
  * @since 2017-01-05
  */
-@Service(value = "usrService")
-public class UsrServiceImpl implements UsrService {
+@Service(value = "userService")
+public class UserServiceImpl implements UserService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource(name = "commonDAO")
@@ -56,13 +56,13 @@ public class UsrServiceImpl implements UsrService {
     /**
      * {@inheritDoc}
      *
-     * @param usrId 사용자 ID
-     * @return UsrSessionModel
+     * @param userId 사용자 ID
+     * @return UserSessionModel
      * @throws Exception
      */
     @Override
-    public UsrSessionModel selectUsrSessionInfo(String usrId, String sessionDiv) throws Exception {
-        UsrSessionModel model = (UsrSessionModel) commonDAO.select("usr.selectUsrSessionInfo", usrId);
+    public UserSessionModel selectUserSessionInfo(String userId, String sessionDiv) throws Exception {
+        UserSessionModel model = (UserSessionModel) commonDAO.select("user.selectUserSessionInfo", userId);
 
         if (model != null) {
 
@@ -73,7 +73,7 @@ public class UsrServiceImpl implements UsrService {
             model.setMenuModelList(menuService.selectUsrMenuList(model.getAuthCd(), sessionDiv));
 
             Map<String, List<String>> menuAuthRet = new HashMap<>();
-            List<Map<String, String>> menuAuth = commonDAO.list("menu.selectCmmBtnAuth", usrId);
+            List<Map<String, String>> menuAuth = commonDAO.list("menu.selectCmmBtnAuth", userId);
             for (Map<String, String> data : menuAuth) {
                 String menuId = data.get("MENU_ID");
                 String btnId = data.get("BTN_ID");
@@ -139,7 +139,7 @@ public class UsrServiceImpl implements UsrService {
         // 조회쿼리
         String qKey = (String) param.get(Constant.QUERY_KEY.getCode());
         if (!param.containsKey("USER_ID")) {
-            param.put("USER_ID", model.getUsrSessionModel().getUserId());
+            param.put("USER_ID", model.getUserSessionModel().getUserId());
         }
         Map<String, Object> map = (Map<String, Object>) commonDAO.select(qKey, param);
 
@@ -177,9 +177,9 @@ public class UsrServiceImpl implements UsrService {
             param.put("HP_NO", DocUtil.encrypt((String) param.get("HP_NO")));
         }
 
-        param.put("MOD_ID", model.getUsrSessionModel().getUserId());
+        param.put("MOD_ID", model.getUserSessionModel().getUserId());
 
-        commonDAO.update("usr.updateUser", param);
+        commonDAO.update("user.updateUser", param);
 
         // 가입상태 변경에 따른 처리
         String userStatus = (String) param.get("USER_STATUS");
@@ -196,7 +196,7 @@ public class UsrServiceImpl implements UsrService {
                 saveUserDrop(model);
 
             } else {
-                commonDAO.insert("usr.insertCmmStatusHis", param);
+                commonDAO.insert("user.insertCmmStatusHis", param);
 
             }
         }
@@ -224,7 +224,7 @@ public class UsrServiceImpl implements UsrService {
         mailMap.put("RANDOM_PASSWORD", randomPassword);
 
         // 암호 초기화
-        commonDAO.update("usr.updateUserPassword", mailMap);
+        commonDAO.update("user.updateUserPassword", mailMap);
 
         String receiver = (String) mailMap.get("EMAIL");
         String title = "GoGlobal 서비스 사용자 임시 비밀번호 발송";
@@ -247,7 +247,7 @@ public class UsrServiceImpl implements UsrService {
     public AjaxModel saveUserApprove(AjaxModel model) throws Exception {
         Map<String, Object> param = model.getData();
 
-        Map<String, Object> userData = (Map<String, Object>) commonDAO.select("usr.selectUser", param);
+        Map<String, Object> userData = (Map<String, Object>) commonDAO.select("user.selectUser", param);
 
         String userDiv = (String) userData.get("USER_DIV");
         String authCd = (String) userData.get("AUTH_CD");
@@ -255,26 +255,26 @@ public class UsrServiceImpl implements UsrService {
         // 관세사이고 권한코드가 없을때 권한코드 update+0.
         if ("G".equals(userDiv) && StringUtils.isEmpty(authCd)) {
             userData.put("AUTH_CD", "CUSTOMS");
-            userData.put("REG_ID", model.getUsrSessionModel().getUserId());
-            commonDAO.update("usr.updateUserAuthcd", userData);
+            userData.put("REG_ID", model.getUserSessionModel().getUserId());
+            commonDAO.update("user.updateUserAuthcd", userData);
         }
 
-        commonDAO.update("usr.updateUserApprove", userData);// 회원상태 업데이트
+        commonDAO.update("user.updateUserApprove", userData);// 회원상태 업데이트
 
         //판매자 기본값 테이블에서 해당 키값의 데이터를 삭제..승인시 해당정보는 없어야함
-        commonDAO.delete("usr.deleteCmmbasevalSeller", userData);
+        commonDAO.delete("user.deleteCmmbasevalSeller", userData);
 
         //판매자 신고서 기본값 CMM_BASEVAL_SELLER에 기본값 Insert
-        commonDAO.insert("usr.insertCmbasevalSeller", userData);
+        commonDAO.insert("user.insertCmbasevalSeller", userData);
 
         // 상태변경 내역 저장
         param.put("USER_STATUS", "1");
         param.put("USER_STATUS_REASON", "가입승인");
-        commonDAO.insert("usr.insertCmmStatusHis", param);
+        commonDAO.insert("user.insertCmmStatusHis", param);
 
         param.put("USER_DIV", userDiv);
 
-        param.putAll((Map) commonDAO.select("usr.selectUserBaseVal", param));
+        param.putAll((Map) commonDAO.select("user.selectUserBaseVal", param));
 
         String receiver = (String) param.get("EMAIL");
         String title = "GoGlobal 서비스 사용자 가입승인";
@@ -301,15 +301,15 @@ public class UsrServiceImpl implements UsrService {
         Map<String, Object> apiMap = new HashMap<>();
         apiMap.put("USER_ID", param.get("USER_ID"));
         apiMap.put("API_KEY", DocUtil.getApiKey());
-        apiMap.put("MOD_ID", model.getUsrSessionModel().getUserId());
+        apiMap.put("MOD_ID", model.getUserSessionModel().getUserId());
 
-        commonDAO.update("usr.updateAPIKeyMng", apiMap);
+        commonDAO.update("user.updateAPIKeyMng", apiMap);
 
         // API키관리상세 등록
-        List<Map<String, Object>> list = commonDAO.list("usr.selectApiDtl", apiMap); //CMM_API_KEY_DTL 조회
+        List<Map<String, Object>> list = commonDAO.list("user.selectApiDtl", apiMap); //CMM_API_KEY_DTL 조회
 
         if (list.size() <= 0) { //기존 ApiKeyDtl 데이터가 없을 경우
-            commonDAO.insert("usr.insertApiDtl", apiMap);
+            commonDAO.insert("user.insertApiDtl", apiMap);
         }
 
         model.setCode("I00000009");// 생성되었습니다.
@@ -328,17 +328,17 @@ public class UsrServiceImpl implements UsrService {
     public AjaxModel saveUserDrop(AjaxModel model) throws Exception {
         Map<String, Object> param = model.getData();
 
-        param.put("MOD_ID", model.getUsrSessionModel().getUserId());
+        param.put("MOD_ID", model.getUserSessionModel().getUserId());
 
-        commonDAO.update("usr.updateUserDrop", param); // 사용자 정보 갱신
+        commonDAO.update("user.updateUserDrop", param); // 사용자 정보 갱신
 
         // API KEY 상태를 사용정지로 변경
-        commonDAO.update("usr.updateApiReqStatus", param);
+        commonDAO.update("user.updateApiReqStatus", param);
 
         // 상태변경 내역 저장
         param.put("USER_STATUS", "9");
         param.put("USER_STATUS_REASON", "탈퇴승인");
-        commonDAO.insert("usr.insertCmmStatusHis", param);
+        commonDAO.insert("user.insertCmmStatusHis", param);
 
         String receiver = (String) param.get("EMAIL");
         String title = "GoGlobal 서비스 탈퇴가 완료되었습니다.";
@@ -362,18 +362,18 @@ public class UsrServiceImpl implements UsrService {
     public AjaxModel saveUserAttachFileId(AjaxModel model) throws Exception {
         Map<String, Object> params = model.getData();
 
-        commonDAO.update("usr.udpateUsrAttchFileId", params);
+        commonDAO.update("user.udpateUsrAttchFileId", params);
         return model;
     }
 
     /**
      * {@inheritDoc}
      *
-     * @param usrSessionModel
+     * @param userSessionModel
      */
     @Override
-    public void updateUserLoginInfo(UsrSessionModel usrSessionModel) {
-        commonDAO.update("usr.updateUserLoginInfo", usrSessionModel);
+    public void updateUserLoginInfo(UserSessionModel userSessionModel) {
+        commonDAO.update("user.updateUserLoginInfo", userSessionModel);
     }
 
     /**
@@ -385,7 +385,7 @@ public class UsrServiceImpl implements UsrService {
     @Override
     public AjaxModel deleteUser(AjaxModel model) {
         Map<String, Object> param = model.getData();
-        Map<String, Object> userData = (Map<String, Object>) commonDAO.select("usr.selectUser", param);
+        Map<String, Object> userData = (Map<String, Object>) commonDAO.select("user.selectUser", param);
 
         // 1. 첨부파일 삭제
         if (StringUtils.isNotEmpty((String) userData.get("ATCH_FILE_ID"))) {
@@ -399,16 +399,16 @@ public class UsrServiceImpl implements UsrService {
         commonDAO.delete("api.deleteCmmapikeymst", userData); // MASTER 삭제
 
         // 3. 사용자 신고서 기본값 삭제
-        commonDAO.delete("usr.deleteCmmbasevalseller", userData);
+        commonDAO.delete("user.deleteCmmbasevalseller", userData);
 
         // 4. 수발신 식별자 삭제
-        commonDAO.delete("usr.deleteCmmidentifier", userData);
+        commonDAO.delete("user.deleteCmmidentifier", userData);
 
         // 5. 가입상태 내역 삭제
-        commonDAO.delete("usr.deleteCmmstatushis", userData);
+        commonDAO.delete("user.deleteCmmstatushis", userData);
 
         // 6. 사용자 삭제
-        commonDAO.delete("usr.deleteCmmuser", userData);
+        commonDAO.delete("user.deleteCmmuser", userData);
 
         model.setCode("I00000004"); //삭제되었습니다.
 

@@ -2,14 +2,14 @@ package kr.pe.sdh.common.service;
 
 
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 
 /**
  * 시스템관리 > 사용자관리 추상 클래스
  * @author 성동훈
  * @since 2017-01-05
  * @version 1.0
- * @see UsrServiceImpl
+ * @see UserServiceImpl
  *
  * <pre>
  * == 개정이력(Modification Information) ==
@@ -20,15 +20,15 @@ import kr.pe.sdh.core.model.UsrSessionModel;
  *
  * </pre>
  */
-public interface UsrService {
+public interface UserService {
 	/**
 	 * 사용자 조회
 	 *  - 세션 설정 용도
 	 * @param usrId									사용자 ID
-	 * @return UsrSessionModel
+	 * @return UserSessionModel
 	 * @throws Exception
 	 */
-	UsrSessionModel selectUsrSessionInfo(String usrId, String sessionDiv) throws Exception;
+	UserSessionModel selectUserSessionInfo(String usrId, String sessionDiv) throws Exception;
 
 	/**
 	 * 사용자 리스트 조회
@@ -95,9 +95,9 @@ public interface UsrService {
 
 	/**
 	 * 로그인시 로그인 정보 수정
-	 * @param usrSessionModel
+	 * @param userSessionModel
 	 */
-	void updateUserLoginInfo(UsrSessionModel usrSessionModel);
+	void updateUserLoginInfo(UserSessionModel userSessionModel);
 
 	/**
 	 * 사용자 삭제

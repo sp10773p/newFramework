@@ -30,7 +30,7 @@ public class AjaxModel {
     private String code = "";
     private String msg  = "";
 
-    private UsrSessionModel usrSessionModel;
+    private UserSessionModel userSessionModel;
 
     public AjaxModel() {
 
@@ -77,12 +77,12 @@ public class AjaxModel {
         this.total = total;
     }
 
-    public UsrSessionModel getUsrSessionModel() {
-        return usrSessionModel;
+    public UserSessionModel getUserSessionModel() {
+        return userSessionModel;
     }
 
-    public void setUsrSessionModel(UsrSessionModel usrSessionModel) {
-        this.usrSessionModel = usrSessionModel;
+    public void setUserSessionModel(UserSessionModel userSessionModel) {
+        this.userSessionModel = userSessionModel;
     }
 
     public String getCode() {
@@ -105,7 +105,7 @@ public class AjaxModel {
                 ", status=" + status +
                 ", code='" + code + '\'' +
                 ", msg='" + msg + '\'' +
-                ", usrSessionModel=" + usrSessionModel +
+                ", userSessionModel=" + userSessionModel +
                 '}';
     }
 }

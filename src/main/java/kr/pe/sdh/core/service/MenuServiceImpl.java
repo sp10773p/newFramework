@@ -58,10 +58,10 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public AjaxModel selectMenuList(AjaxModel model) {
         Map<String, Object> params = model.getData();
-        if(model.getUsrSessionModel() == null){
+        if(model.getUserSessionModel() == null){
             params.put("authCd", "DEFAULT");
         }else{
-            params.put("authCd", model.getUsrSessionModel().getAuthCd());
+            params.put("authCd", model.getUserSessionModel().getAuthCd());
         }
 
 
@@ -80,8 +80,8 @@ public class MenuServiceImpl implements MenuService {
 
         String saveMode = (String)param.get("SAVE_MODE");
 
-        param.put("REG_ID", model.getUsrSessionModel().getUserId());
-        param.put("MOD_ID", model.getUsrSessionModel().getUserId());
+        param.put("REG_ID", model.getUserSessionModel().getUserId());
+        param.put("MOD_ID", model.getUserSessionModel().getUserId());
 
         String newMenuId = (String)commonDAO.select("menu.selectNewMenuId", param);
         param.put("NEW_MENU_ID", newMenuId);
@@ -144,8 +144,8 @@ public class MenuServiceImpl implements MenuService {
 
         String saveMode = (String)param.get("BTN_SAVE_MODE");
 
-        param.put("REG_ID", model.getUsrSessionModel().getUserId());
-        param.put("MOD_ID", model.getUsrSessionModel().getUserId());
+        param.put("REG_ID", model.getUserSessionModel().getUserId());
+        param.put("MOD_ID", model.getUserSessionModel().getUserId());
 
         // 신규저장일경우
         if("I".equals(saveMode)){

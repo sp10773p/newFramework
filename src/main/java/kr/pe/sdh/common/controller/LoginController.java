@@ -1,9 +1,9 @@
 package kr.pe.sdh.common.controller;
 
-import kr.pe.sdh.common.service.UsrService;
+import kr.pe.sdh.common.service.UserService;
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.model.AccessLogModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 import kr.pe.sdh.core.service.CommonService;
 import kr.pe.sdh.core.service.MenuService;
 import kr.pe.sdh.core.util.DateUtil;
@@ -45,8 +45,8 @@ public class LoginController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Resource(name = "usrService")
-	private UsrService usrService;
+	@Resource(name = "userService")
+	private UserService userService;
 
 	@Resource(name = "commonService")
 	private CommonService commonService;
@@ -95,7 +95,7 @@ public class LoginController {
 									@RequestParam(value = "userPw") String userPw,
 									@RequestParam(value = "sessionDiv") String sessionDiv, HttpServletRequest request) throws Exception {
 
-		UsrSessionModel usrSessionModel = usrService.selectUsrSessionInfo(userId, sessionDiv);
+		UserSessionModel userSessionModel = userService.selectUserSessionInfo(userId, sessionDiv);
 
 		ModelAndView mnv = new ModelAndView();
 		AccessLogModel accessLogModel = new AccessLogModel();
@@ -103,24 +103,25 @@ public class LoginController {
 		String ip  = WebUtil.getClientIp(request);
 		String msg = null;
 
-		String redirect = "/";
+		mnv.setViewName("main/main");
 
+		/* TODO 유저화면이 생기면 그때 변경
 		if(Constant.ADM_SESSION_DIV.getCode().equals(sessionDiv)){
-			redirect = "/admin";
+			redirect = "main/main";
 
-		}
+		}*/
 
-		if (usrSessionModel == null) {
+		if (userSessionModel == null) {
 			msg = commonService.getMessage("I00000001");// 아이디 또는 비밀번호가 올바르지 않습니다.
 
-			//} else if (this.isPasswordEncrypt &&  !Sha256.compareEncrypt(usrSessionModel.getUserPw(), userPw) ||
-		} else if (!usrSessionModel.getUserPw().equals(Sha256.encrypt(userPw))) {
+			//} else if (this.isPasswordEncrypt &&  !Sha256.compareEncrypt(userSessionModel.getUserPw(), userPw) ||
+		} else if (!userSessionModel.getUserPw().equals(Sha256.encrypt(userPw))) {
 			msg = commonService.getMessage("I00000001"); // 아이디 또는 비밀번호가 올바르지 않습니다.
 
-		}else if(!"1".equals(usrSessionModel.getUserStatus()) || !"Y".equals(usrSessionModel.getUseChk())){ // 사용자 상태( 1 : 가입승인 ) || 사용여부
+		}else if(!"1".equals(userSessionModel.getUserStatus()) || !"Y".equals(userSessionModel.getUseChk())){ // 사용자 상태( 1 : 가입승인 ) || 사용여부
 			msg = commonService.getMessage("W00000062"); // 사용할 수 없는 상태 입니다.
 
-		}else if(usrSessionModel.getMenuModelList().size() == 0){
+		}else if(userSessionModel.getMenuModelList().size() == 0){
 			msg = commonService.getMessage("W00000022"); // 사용할 수 있는 메뉴가 없습니다. \n권한이나 접속한 사이트를 확인 하세요.
 
 			// IP접속허용체크
@@ -130,36 +131,35 @@ public class LoginController {
 		}
 
 		if(msg == null) {
-			usrSessionModel.setLoginError(0);
-			if (usrSessionModel.getLoginLast() == null || DateUtil.parse(usrSessionModel.getLoginLast().replaceAll("-", "").substring(0, 8), "yyyyMMdd").before(DateUtil.parse("20000101", "yyyyMMdd"))) {
-				usrSessionModel.setLoginStart(DateUtil.stamp().toString());
+			userSessionModel.setLoginError(0);
+			if (userSessionModel.getLoginLast() == null || DateUtil.parse(userSessionModel.getLoginLast().replaceAll("-", "").substring(0, 8), "yyyyMMdd").before(DateUtil.parse("20000101", "yyyyMMdd"))) {
+				userSessionModel.setLoginStart(DateUtil.stamp().toString());
 			}
 
-			usrSessionModel.setLoginLast(DateUtil.stamp().toString());
-			usrSessionModel.setModId(usrSessionModel.getUserId());
+			userSessionModel.setLoginLast(DateUtil.stamp().toString());
+			userSessionModel.setModId(userSessionModel.getUserId());
 
 			// 사용자 로그인 정보 갱신
-			usrService.updateUserLoginInfo(usrSessionModel);
+			userService.updateUserLoginInfo(userSessionModel);
 
-			usrSessionModel.setUserIp(ip);
+			userSessionModel.setUserIp(ip);
 			HttpSession session = request.getSession(true);
 
 			if (Constant.USR_SESSION_DIV.getCode().equals(sessionDiv)) {
-				session.setAttribute(Constant.SESSION_KEY_USR.getCode(), usrSessionModel);
+				session.setAttribute(Constant.SESSION_KEY_USR.getCode(), userSessionModel);
 
 			} else if (Constant.ADM_SESSION_DIV.getCode().equals(sessionDiv)) {
-				session.setAttribute(Constant.SESSION_KEY_ADM.getCode(), usrSessionModel);
+				session.setAttribute(Constant.SESSION_KEY_ADM.getCode(), userSessionModel);
 
 			}
 
-			mnv.setViewName(String.format("redirect:%s", redirect));
 			accessLogModel.setRmk("로그인 성공");
-
 		}else{
 			mnv.addObject("userId" , userId);
 			mnv.addObject("userPw" , userPw);
 			mnv.addObject("msg"    , msg);
-			mnv.setViewName(String.format("forward:%s", redirect));
+
+			mnv.setViewName("login/adminLogin");
 
 			accessLogModel.setRmk("로그인 실패[" + msg + "]");
 		}
@@ -190,7 +190,7 @@ public class LoginController {
 		ModelAndView mav = new ModelAndView();
 		HttpSession session = request.getSession();
 
-		UsrSessionModel sessionModel = commonService.getUsrSessionModel(request);
+		UserSessionModel sessionModel = commonService.getUesrSessionModel(request);
 
 		if(sessionModel != null){
 			AccessLogModel accessLogModel = new AccessLogModel();

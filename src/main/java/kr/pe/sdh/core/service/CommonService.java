@@ -2,7 +2,7 @@ package kr.pe.sdh.core.service;
 
 import kr.pe.sdh.core.model.AccessLogModel;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -190,7 +190,7 @@ public interface CommonService {
      * @param request
      * @return
      */
-    public UsrSessionModel getUsrSessionModel(HttpServletRequest request);
+    public UserSessionModel getUesrSessionModel(HttpServletRequest request);
 
     /**
      * 로그 제외 여부
@@ -203,13 +203,6 @@ public interface CommonService {
      * 로그필터관리 조회
      */
     void loadLogMngModel();
-
-    /**
-     * 메인 요약 조회
-     * @param model
-     * @return
-     */
-    AjaxModel selectDecSummary(AjaxModel model);
 
     AjaxModel selectCmmLogTest(AjaxModel model) throws SQLException;
 
@@ -237,9 +230,9 @@ public interface CommonService {
 
     /**
      * 세션정보 셋팅
-     * @param usrSessionModel
+     * @param userSessionModel
      * @param map
      * @throws Exception
      */
-    void addUsrIinfoToMap(UsrSessionModel usrSessionModel, Map map) throws Exception;
+    void addUsrIinfoToMap(UserSessionModel userSessionModel, Map map) throws Exception;
 }

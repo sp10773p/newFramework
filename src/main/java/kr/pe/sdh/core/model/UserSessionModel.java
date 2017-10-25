@@ -23,8 +23,8 @@ import java.util.Map;
  *
  * </pre>
  */
-@Alias("usrSessionModel")
-public class UsrSessionModel implements Serializable{
+@Alias("userSessionModel")
+public class UserSessionModel implements Serializable{
     /*사용자ID*/
     private String userId;
     /*사용자명*/
@@ -75,19 +75,12 @@ public class UsrSessionModel implements Serializable{
     private String modId;
     /*수정일자*/
     private String modDtm;
-    /*관세사신고인부호*/
-    private String applicantId;
-    /*통관고유부호*/
-    private String tgNo;
     /*대표자명*/
     private String repNm;
     /*우편번호*/
     private String zipCd;
     /*주소*/
     private String address;
-
-    /*UTH 사용자 ID*/
-    private String uthUserId;
 
 	/* 사용자 접속 IP */
     private String userIp;
@@ -280,22 +273,6 @@ public class UsrSessionModel implements Serializable{
         this.modDtm = modDtm;
     }
 
-    public String getApplicantId() {
-        return applicantId;
-    }
-
-    public void setApplicantId(String applicantId) {
-        this.applicantId = applicantId;
-    }
-    
-    public String getTgNo() {
-		return tgNo;
-	}
-
-	public void setTgNo(String tgNo) {
-		this.tgNo = tgNo;
-	}
-	
     public String getRepNm() {
 		return repNm;
 	}
@@ -368,17 +345,9 @@ public class UsrSessionModel implements Serializable{
         this.userStatus = userStatus;
     }
 
-    public String getUthUserId() {
-        return uthUserId;
-    }
-
-    public void setUthUserId(String uthUserId) {
-        this.uthUserId = uthUserId;
-    }
-
     @Override
     public String toString() {
-        return "UsrSessionModel{" +
+        return "UserSessionModel{" +
                 "userId='" + userId + '\'' +
                 ", userNm='" + userNm + '\'' +
                 ", userPw='" + userPw + '\'' +
@@ -404,12 +373,9 @@ public class UsrSessionModel implements Serializable{
                 ", regDtm='" + regDtm + '\'' +
                 ", modId='" + modId + '\'' +
                 ", modDtm='" + modDtm + '\'' +
-                ", applicantId='" + applicantId + '\'' +
-                ", tgNo='" + tgNo + '\'' +
                 ", repNm='" + repNm + '\'' +
                 ", zipCd='" + zipCd + '\'' +
                 ", address='" + address + '\'' +
-                ", uthUserId='" + uthUserId + '\'' +
                 ", userIp='" + userIp + '\'' +
                 ", menuModelList=" + menuModelList +
                 ", menuBtnAuth=" + menuBtnAuth +

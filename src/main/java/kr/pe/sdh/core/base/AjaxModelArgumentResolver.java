@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import kr.pe.sdh.core.model.AccessLogModel;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 import kr.pe.sdh.core.service.CommonService;
 import kr.pe.sdh.core.util.KeyGen;
 import kr.pe.sdh.core.util.WebUtil;
@@ -95,12 +95,12 @@ public class AjaxModelArgumentResolver implements HandlerMethodArgumentResolver 
         String actionNm = (String) data.get(Constant.ACTION_NM.getCode());
 
         HttpSession session = request.getSession();
-        UsrSessionModel sessionModel = commonService.getUsrSessionModel(request);
+        UserSessionModel sessionModel = commonService.getUesrSessionModel(request);
 
         String sessionId = session.getId();
 
         if (sessionModel != null) {
-            model.setUsrSessionModel(sessionModel);
+            model.setUserSessionModel(sessionModel);
 
             addUsrIinfoToModel(model);
             try {
@@ -141,7 +141,7 @@ public class AjaxModelArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     private void addUsrIinfoToModel(AjaxModel model) throws Exception {
-        commonService.addUsrIinfoToMap(model.getUsrSessionModel(), model.getData());
+        commonService.addUsrIinfoToMap(model.getUserSessionModel(), model.getData());
     }
 
     private String getBody(HttpServletRequest request) throws IOException {

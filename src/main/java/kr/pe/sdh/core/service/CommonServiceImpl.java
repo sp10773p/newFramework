@@ -9,7 +9,7 @@ import kr.pe.sdh.core.excel.ExcelWriter;
 import kr.pe.sdh.core.model.AccessLogModel;
 import kr.pe.sdh.core.model.AjaxModel;
 import kr.pe.sdh.core.model.LogMngModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 import kr.pe.sdh.core.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -358,7 +358,7 @@ public class CommonServiceImpl implements CommonService {
         try{
             List<Map<String, Object>> headers = (List)jsonObject.get("headers");
 
-            UsrSessionModel sessionModel = getUsrSessionModel(request);
+            UserSessionModel sessionModel = getUesrSessionModel(request);
             if(sessionModel != null){
                 addUsrIinfoToMap(sessionModel, map);
             }
@@ -623,7 +623,7 @@ public class CommonServiceImpl implements CommonService {
      * {@inheritDoc}
      */
     @Override
-    public UsrSessionModel getUsrSessionModel(HttpServletRequest request) {
+    public UserSessionModel getUesrSessionModel(HttpServletRequest request) {
         String sessionDiv = request.getHeader("sessiondiv"); // ajax 용
         if(sessionDiv == null) sessionDiv = request.getParameter("MENU_DIV");   // 메뉴 용
         if(sessionDiv == null) sessionDiv = request.getParameter("sessionDiv");
@@ -637,7 +637,7 @@ public class CommonServiceImpl implements CommonService {
 
         }
 
-        return (UsrSessionModel)session.getAttribute(sessionKey);
+        return (UserSessionModel)session.getAttribute(sessionKey);
     }
 
     /**
@@ -716,83 +716,6 @@ public class CommonServiceImpl implements CommonService {
         logMngList = daoFactory.getDao().list("log.selectCmmLogMngList");
     }
 
-
-    /**
-     * {@inheritDoc}
-     * @param model
-     * @return
-     */
-    @Override
-    public AjaxModel selectDecSummary(AjaxModel model) {
-        UsrSessionModel sessionModel = model.getUsrSessionModel();
-
-        Map<String, Object> retMap = new HashMap<>();
-        Map<String, String> params = new HashMap<>();
-
-        params.put("F_REG_DTM", DateUtil.format(Integer.parseInt(datePeriod)*-1, "yyyyMMdd"));
-        params.put("T_REG_DTM", DateUtil.getToday("yyyyMMdd"));
-
-        if(sessionModel.getUserDiv().equals("G")) { // 관세사
-
-            params.put("APPLICANT_ID", sessionModel.getApplicantId());
-
-            // 수출신고요청내역 건수
-            int cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDecReqCount", params)));
-            retMap.put("CUSTOMS_REQ_COUNT", cnt);
-
-            // 수출정정의뢰 건수
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDecModCount", params)));
-            retMap.put("CUSTOMS_MOD_COUNT", cnt);
-
-            // 수출신고 건수
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDec830Count", params)));
-            retMap.put("CUSTOMS_DEC_COUNT", cnt);
-
-            // 반품수입신고의뢰 건수
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectImpReqCount", params)));
-            retMap.put("CUSTOMS_IMP_REQ_COUNT", cnt);
-
-        }else if(sessionModel.getUserDiv().equals("E")){ // 특송사
-
-            params.put("BIZ_NO", sessionModel.getBizNo());
-
-            // 배송요청 건수
-            int cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectShipReqCount", params)));
-            retMap.put("EXPRESS_REQ_COUNT", cnt);
-
-            // 배송요청접수확인 건수
-            params.put("STATUSCD", "'B'"); // 접수확인
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectShipReqCount", params)));
-            retMap.put("EXPRESS_REC_COUNT", cnt);
-
-        }else{ // 셀러
-
-            params.put("BIZ_NO", sessionModel.getBizNo());
-
-            // 신고요청 건수
-            int cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDecReqCount", params)));
-            retMap.put("SELLER_REQ_COUNT", cnt);
-
-            // 신고처리 건수
-            params.put("STATUS", "'03'"); // 수리
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDec830Count", params)));
-            retMap.put("SELLER_COUNT", cnt);
-
-            // 신고오류 건수
-            params.put("STATUS", "'01'"); // 오류
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDec830Count", params)));
-            retMap.put("SELLER_ERR_COUNT", cnt);
-
-            // 정정신청 건수
-            cnt = Integer.parseInt(String.valueOf(daoFactory.getDao().select("common.selectDecModCount", params)));
-            retMap.put("SELLER_MOD_COUNT", cnt);
-        }
-
-        model.setData(retMap);
-
-        return model;
-    }
-
     @Override
     public AjaxModel selectCmmLogTest(AjaxModel model) throws SQLException {
         Map<String, Object> param = model.getData();
@@ -813,7 +736,7 @@ public class CommonServiceImpl implements CommonService {
         param.put("END"  , (nPageIndex * nPageRow) + nPageRow);
         param.put("ROWS" , nPageRow);
 
-        param.put("USER_ID" , model.getUsrSessionModel().getUserId());
+        param.put("USER_ID" , model.getUserSessionModel().getUserId());
 
         String searchCol = (String)param.get("SEARCH_COL1");
 
@@ -931,8 +854,8 @@ public class CommonServiceImpl implements CommonService {
      * @throws Exception
      */
     @Override
-    public void addUsrIinfoToMap(UsrSessionModel usrSessionModel, Map map) throws Exception {
-        Map<String, String> tempMap = BeanUtils.describe(usrSessionModel);
+    public void addUsrIinfoToMap(UserSessionModel userSessionModel, Map map) throws Exception {
+        Map<String, String> tempMap = BeanUtils.describe(userSessionModel);
 
         for ( Map.Entry< String, String> entry : tempMap.entrySet() ) {
             String notTarget = "menuModelList,userPw,class";

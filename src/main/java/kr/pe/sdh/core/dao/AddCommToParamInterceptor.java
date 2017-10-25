@@ -2,7 +2,7 @@ package kr.pe.sdh.core.dao;
 
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.UsrSessionModel;
+import kr.pe.sdh.core.model.UserSessionModel;
 import kr.pe.sdh.core.service.CommonService;
 import kr.pe.sdh.core.service.CommonServiceImpl;
 import org.apache.ibatis.executor.Executor;
@@ -19,7 +19,7 @@ import java.util.Properties;
 
 /**
  * Mybatis Interceptor
- * - 쿼리 수행시 파라미터 객체에 UsrSessionModel을 추가
+ * - 쿼리 수행시 파라미터 객체에 UserSessionModel을 추가
  * @author 김진호
  * @since 2017-01-20
  * @version 1.0
@@ -54,7 +54,7 @@ public class AddCommToParamInterceptor implements Interceptor {
 
 			HttpServletRequest request = attr.getRequest();
 			CommonService commonService = new CommonServiceImpl();
-		    UsrSessionModel usrSessionMode = commonService.getUsrSessionModel(request);
+		    UserSessionModel usrSessionMode = commonService.getUesrSessionModel(request);
 
 			String sessionDiv = request.getHeader("sessiondiv");
 			if(sessionDiv == null) {
