@@ -6,22 +6,6 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<script>
-    $(function(){
-        $('#bntLogout').on("click", function(){
-            if(!confirm("로그아웃 하시겠습니까?")){
-                return;
-            }
-
-            var form = $("<form>");
-            $("body").append(form);
-
-            form.append($("<input type='hidden' name='sessionDiv' value='" + $.comm.getGlobalVar("sessionDiv") + "' >"));
-            form.attr("method", "post");
-            form.attr("action", '/logout').submit();
-        })
-    })
-</script>
 <!-- Main Header -->
 <header class="main-header">
     <!-- Logo -->
@@ -176,7 +160,7 @@
                                 <a href="#" class="btn btn-default btn-flat">Profile</a>
                             </div>
                             <div class="pull-right">
-                                <a href="javascript:void(0)" class="btn btn-default btn-flat" id="bntLogout">Sign out</a>
+                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
                             </div>
                         </li>
                     </ul>
