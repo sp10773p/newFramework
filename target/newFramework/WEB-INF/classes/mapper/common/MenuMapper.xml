@@ -92,6 +92,7 @@
                  , A.AUTH_CD      AS authCd     /*권한코드*/
                  , A.DASH_PATH    AS dashPath
                  , A.DASH_URL     AS dashUrl
+                 , A.ICON     	  AS icon
 			FROM
             (
                 SELECT
@@ -111,6 +112,7 @@
 	                    , A.MOD_DTM
 	                    , A.DASH_PATH
 	                    , A.DASH_URL
+	                    , A.ICON
 	                    , B.AUTH_CD
                 FROM 	CMM_MENU_MAS A
                 , 		CMM_MENU_AUTH B

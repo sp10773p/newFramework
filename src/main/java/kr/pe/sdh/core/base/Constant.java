@@ -23,9 +23,6 @@ public enum Constant {
     SUMMARY_QUERY_KEY("SUMMARY_QKEY"), // 합계/집계 쿼리 키
     SUMMARY_TITLE("합계"), // 합계/집계 필드 문구
 
-    /** DB POOL Names **/
-    ECDP("ecdp"),
-
     ACTION_NM("ACTION_NM"),               // Action NM
     ACTION_MENU_ID("ACTION_MENU_ID"),     // CURRENT ACTION MENU ID
     ACTION_MENU_NM("ACTION_MENU_NM"),     // CURRENT ACTION MENU NAME
@@ -37,12 +34,10 @@ public enum Constant {
 
     SESSION_KEY_USR("USR_SESSION"), // USER SESSION KEY
     SESSION_KEY_ADM("ADM_SESSION"), // ADMIN SESSION KEY
-    SESSION_KEY_MBL("MBL_SESSION"), // MOBILE SESSION KEY
 
     USR_SESSION_DIV("W"), // 사용자
     ADM_SESSION_DIV("M"), // 어드민
-    MBL_SESSION_DIV("S"), // 모바일
-    
+
     OPEN_API_DIV("A"), // Open API
     BATCH_DIV("B"), // BATCH
 
@@ -50,7 +45,8 @@ public enum Constant {
     POST_INSERT("1"),
     POST_DELETE("2"),
 
-    AJAX_MODEL("AJAX_MODEL"), SESSION_MENU_LIST("SESSION_MENU_LIST");
+    AJAX_MODEL("AJAX_MODEL"),
+    SESSION_MENU_LIST("SESSION_MENU_LIST");
 
 
     private String key;

@@ -9,13 +9,6 @@
 <title>Admin UCS</title>
 <!-- Tell the browser to be responsive to screen width -->
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
-<link rel="stylesheet" href="css/grid.css">
-
-<%-- developer Add Scripts--%>
-<script src="js/grid.js"></script>
-<script src="js/common.js"></script>
-<script src="js/dateutil.js"></script>
 <script>
     $(function(){
         $.comm.initCalendar();  // 날짜필드 datepicker setting

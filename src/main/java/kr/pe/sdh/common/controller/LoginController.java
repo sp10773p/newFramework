@@ -1,6 +1,5 @@
 package kr.pe.sdh.common.controller;
 
-import com.google.gson.Gson;
 import kr.pe.sdh.common.service.UsrService;
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.model.AccessLogModel;
@@ -23,8 +22,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -111,9 +108,6 @@ public class LoginController {
 		if(Constant.ADM_SESSION_DIV.getCode().equals(sessionDiv)){
 			redirect = "/admin";
 
-		}else if(Constant.MBL_SESSION_DIV.getCode().equals(sessionDiv)){
-			redirect = "/mobile";
-
 		}
 
 		if (usrSessionModel == null) {
@@ -155,9 +149,6 @@ public class LoginController {
 
 			} else if (Constant.ADM_SESSION_DIV.getCode().equals(sessionDiv)) {
 				session.setAttribute(Constant.SESSION_KEY_ADM.getCode(), usrSessionModel);
-
-			} else if (Constant.MBL_SESSION_DIV.getCode().equals(sessionDiv)) {
-				session.setAttribute(Constant.SESSION_KEY_MBL.getCode(), usrSessionModel);
 
 			}
 
@@ -222,12 +213,7 @@ public class LoginController {
 					mav.setViewName(String.format("redirect:%s", "/"));
 					session.setAttribute(Constant.SESSION_KEY_USR.getCode(), null);
 
-			}else if(Constant.MBL_SESSION_DIV.getCode().equals(sessionDiv)){
-				mav.setViewName(String.format("redirect:%s", "/mobile"));
-				session.setAttribute(Constant.SESSION_KEY_MBL.getCode(), null);
-
 			}
-
 		}else{
 			mav.setViewName(String.format("redirect:%s", "/"));
 

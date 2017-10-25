@@ -633,9 +633,6 @@ public class CommonServiceImpl implements CommonService {
         if(Constant.ADM_SESSION_DIV.getCode().equals(sessionDiv)){
             sessionKey = Constant.SESSION_KEY_ADM.getCode();
 
-        }else if(Constant.MBL_SESSION_DIV.getCode().equals(sessionDiv)) {
-            sessionKey = Constant.SESSION_KEY_MBL.getCode();
-
         }
 
         return (UsrSessionModel)session.getAttribute(sessionKey);

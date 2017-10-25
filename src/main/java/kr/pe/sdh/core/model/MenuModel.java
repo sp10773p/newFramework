@@ -65,6 +65,8 @@ public class MenuModel implements Serializable{
     private String dashPath;
     /** DASH 주소 **/
     private String dashUrl;
+    /** 메뉴ICON **/
+    private String icon;
 
     public String getMenuId() {
         return menuId;
@@ -232,5 +234,13 @@ public class MenuModel implements Serializable{
 
     public void setDashUrl(String dashUrl) {
         this.dashUrl = dashUrl;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
