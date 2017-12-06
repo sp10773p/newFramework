@@ -1,4 +1,4 @@
-package kr.pe.sdh.core.model;
+package kr.pe.sdh.common.model;
 
 import com.google.gson.Gson;
 import org.apache.ibatis.type.Alias;

@@ -30,15 +30,11 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <logger name="org.mybatis" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
     <logger name="kr.pe.sdh" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <logger name="jdbc.sqlonly" level="ERROR" additivity="false">
+    <logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

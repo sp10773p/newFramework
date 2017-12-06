@@ -1,5 +1,7 @@
 package kr.pe.sdh.core.model;
 
+import kr.pe.sdh.common.model.UserSessionModel;
+
 import java.util.List;
 import java.util.Map;
 

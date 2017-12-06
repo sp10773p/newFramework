@@ -1,8 +1,8 @@
-package kr.pe.sdh.core.service;
+package kr.pe.sdh.common.service;
 
 import kr.pe.sdh.core.dao.CommonDAO;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.MenuModel;
+import kr.pe.sdh.common.model.MenuModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -30,32 +30,28 @@ import java.util.Map;
  * </pre>
  */
 @Service(value = "menuService")
-public class MenuServiceImpl implements MenuService {
+public class MenuService {
 
     @Resource(name = "commonDAO")
     private CommonDAO commonDAO;
 
     /**
-     * {@inheritDoc}
+     * 사용자메뉴 조회
      * @param authCd
-     * @param sessionDiv
      * @return
      * @throws Exception
      */
-    @Override
-    public List<MenuModel> selectUsrMenuList(String authCd, String sessionDiv) throws Exception {
+    public List<MenuModel> selectUsrMenuList(String authCd) throws Exception {
         Map<String, String> param = new HashMap<>();
         param.put("AUTH_CD" , authCd);
-        param.put("MENU_DIV", sessionDiv);
         return commonDAO.list("menu.selectUsrMenuList", param);
     }
 
     /**
-     * {@inheritDoc}
+     * 메뉴리스트 조회
      * @param model
      * @return
      */
-    @Override
     public AjaxModel selectMenuList(AjaxModel model) {
         Map<String, Object> params = model.getData();
         if(model.getUserSessionModel() == null){
@@ -70,11 +66,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * {@inheritDoc}
+     * 메뉴 저장
      * @param model
      * @return
      */
-    @Override
     public AjaxModel saveMenu(AjaxModel model) {
         Map<String, Object> param = model.getData();
 
@@ -116,11 +111,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * {@inheritDoc}
+     * 메뉴삭제
      * @param model
      * @return
      */
-    @Override
     public AjaxModel deleteMenu(AjaxModel model) {
         Map<String, Object> param = model.getData();
         commonDAO.delete("menu.deleteCmmMenuBtnAll", param);
@@ -134,11 +128,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * {@inheritDoc}
+     * 메뉴별 버튼 저장
      * @param model
      * @return
      */
-    @Override
     public AjaxModel saveMenuBtn(AjaxModel model) {
         Map<String, Object> param = model.getData();
 
@@ -169,11 +162,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * {@inheritDoc}
+     * 메뉴별 버튼 삭제
      * @param model
      * @return
      */
-    @Override
     public AjaxModel deleteMenuBtn(AjaxModel model) {
         List<Map<String, Object>> dataList = model.getDataList();
 
@@ -197,12 +189,11 @@ public class MenuServiceImpl implements MenuService {
 
 
     /**
-     * {@inheritDoc}
+     * 해당 menuId의 최상위 menuId를 가지 MenuModel을 반환
      * @param menuModels
      * @param menuId
      * @return
      */
-    @Override
     public MenuModel findRootMenu(List<MenuModel> menuModels, String menuId){
         for(MenuModel menuModel : menuModels){
             if(menuModel.getMenuId().equals(menuId)){
@@ -218,12 +209,11 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * {@inheritDoc}
+     *  해당 jsp에 해당하는 MenuModel을 반환
      * @param menuModels
      * @param jsp
      * @return
      */
-    @Override
     public MenuModel findJspMenu(List<MenuModel> menuModels, String jsp) {
         if(StringUtils.isEmpty(jsp)){
             return null;

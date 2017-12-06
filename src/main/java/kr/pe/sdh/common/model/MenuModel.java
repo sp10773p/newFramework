@@ -1,4 +1,4 @@
-package kr.pe.sdh.core.model;
+package kr.pe.sdh.common.model;
 
 import org.apache.ibatis.type.Alias;
 

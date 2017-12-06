@@ -7,7 +7,7 @@
     <groupId>kr.pe</groupId>
     <artifactId>sdh</artifactId>
     <version>1.0</version>
-    <name>newAdmin</name>
+    <name>newFramework</name>
     <packaging>war</packaging>
 
     <properties>

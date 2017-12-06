@@ -94,6 +94,27 @@
         <include refid="common.commonCode"/>
     </select>
 
+    <sql id="pagingPre">
+        <![CDATA[
+   			SELECT
+			    AAA.*
+			FROM(
+			    SELECT
+			        COUNT(*) OVER() AS TOTAL_COUNT,
+			        AA.*
+			    FROM(
+ 		]]>
+    </sql>
+
+    <sql id="pagingPost">
+        <![CDATA[
+ 			 	) AA
+			) AAA
+			WHERE
+			    AAA.RNUM BETWEEN #{START} AND #{END}
+ 		]]>
+    </sql>
+
     <sql id="commonCode">
         SELECT  ROW_NUMBER() OVER (ORDER BY B.SEQ) RNUM
                 , B.CLASS_ID

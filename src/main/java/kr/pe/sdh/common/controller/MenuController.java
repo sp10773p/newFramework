@@ -1,7 +1,7 @@
-package kr.pe.sdh.core.controller;
+package kr.pe.sdh.common.controller;
 
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.service.MenuService;
+import kr.pe.sdh.common.service.MenuService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

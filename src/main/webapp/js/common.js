@@ -21,36 +21,22 @@
                             cache: false,
                             async: $.type(async) === 'undefined' || $.type(async) === 'null' ? true : async,
                             processData: false,
-                            contentType: "application/json; charset=UTF-8",
                             enctype: 'multipart/form-data',
                             data: (isAjaxConvert == true ? data : $.comm.getAjaxData(data, actionNm)),
                             beforeSend: function (xhr) {
-                                xhr.setRequestHeader("AJAX"                , true);
                                 xhr.setRequestHeader("ACTION_MENU_ID"      , $.page.getMenuId());
-                                xhr.setRequestHeader("sessionDiv"          , $.page.getSessionDiv() );
-                                xhr.setRequestHeader("GLOBAL_LOGIN_USER_ID", $.comm.getGlobalVar("GLOBAL_LOGIN_USER_ID"));
-                                if($.comm.getGlobalVar("api_consumer_key") != null) xhr.setRequestHeader("api_consumer_key", $.comm.getGlobalVar("api_consumer_key"));
-
                                 $.comm.wait(true);
                             },
                             successCallback: successCallback,
                             errorCallback: errorCallback,
                             ownerObj: ownerObj,
                             success: function (data, status) {
-                                if(!$.comm.isNull(data.code)){
+                                if(!$.comm.isNull(data["code"])){
 
                                     if(data.code == "E00000002"){ // 세션이 만료되었습니다.
                                         alert($.comm.getMessage(data["code"]));
 
-
-                                        var div = $.comm.getGlobalVar("sessionDiv");
                                         var url = "/";
-                                        if(div == 'M'){
-                                            url = "/admin"
-                                        }else if(div == 'B'){
-                                            url = "/mobile"
-                                        }
-
                                         $.comm.mainLocation(url);
                                         return;
 
@@ -80,7 +66,6 @@
                             },
                             complete:function(){
                                 $.comm.wait(false);
-                                //$('.wrap-loading').addClass('display-none'); //이미지 감추기 처리
                             },
                             error: ($.comm.isNull(errorCallback)) ?
                                 function (request,status,error) {

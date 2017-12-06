@@ -2,9 +2,8 @@ package kr.pe.sdh.core.dao;
 
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.UserSessionModel;
-import kr.pe.sdh.core.service.CommonService;
-import kr.pe.sdh.core.service.CommonServiceImpl;
+import kr.pe.sdh.common.model.UserSessionModel;
+import kr.pe.sdh.common.service.CommonService;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.*;
@@ -53,7 +52,7 @@ public class AddCommToParamInterceptor implements Interceptor {
 			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 
 			HttpServletRequest request = attr.getRequest();
-			CommonService commonService = new CommonServiceImpl();
+			CommonService commonService = new CommonService();
 		    UserSessionModel usrSessionMode = commonService.getUesrSessionModel(request);
 
 			String sessionDiv = request.getHeader("sessiondiv");

@@ -123,7 +123,6 @@
                 /*AND 	A.LINK_YN = 'Y'*/
                 AND 	C.USE_YN = 'Y'
                 AND 	B.AUTH_CD = #{AUTH_CD}
-                AND     A.MENU_DIV = #{MENU_DIV}
             ) A
             WHERE 	1 = 1
             START 	WITH A.MENU_LEVEL = 1

@@ -19,12 +19,12 @@
     -->
 
     <!--suppress SpringModelInspection -->
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:maxUploadSize="10000000000" p:uploadTempDir="uploadDirResource" />
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:maxUploadSize="10000000000" p:uploadTempDir="uploadDirResource" />
 	<bean id="uploadDirResource" class="org.springframework.core.io.FileSystemResource">
 	    <constructor-arg>
 	       <value>multipart_temp</value>
 	    </constructor-arg>
-	</bean>
+	</bean>-->
 
     <!-- SendMailBean -->
     <!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"

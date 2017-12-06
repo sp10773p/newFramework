@@ -1,4 +1,4 @@
-package kr.pe.sdh.core.service;
+package kr.pe.sdh.common.service;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -8,8 +8,8 @@ import kr.pe.sdh.core.dao.CommonDAOFactory;
 import kr.pe.sdh.core.excel.ExcelWriter;
 import kr.pe.sdh.core.model.AccessLogModel;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.LogMngModel;
-import kr.pe.sdh.core.model.UserSessionModel;
+import kr.pe.sdh.common.model.LogMngModel;
+import kr.pe.sdh.common.model.UserSessionModel;
 import kr.pe.sdh.core.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -55,7 +55,7 @@ import java.util.*;
  * </pre>
  */
 @Service(value = "commonService")
-public class CommonServiceImpl implements CommonService {
+public class CommonService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource(name = "commonDAOFactory")
@@ -77,17 +77,15 @@ public class CommonServiceImpl implements CommonService {
     private Map<String, String> messageStorage;
 
     /**
-     * {@inheritDoc}
+     * 전체 메시지 조회
      */
-    @Override
     public List<Map<String, String>> getMessageAll() {
         return daoFactory.getDao().list("common.getMessageList");
     }
 
     /**
-     * {@inheritDoc}
+     * 메세지리스트를 객체화 하여 리턴
      */
-    @Override
     public synchronized Map<String, Object> getMessageData() {
         Map<String, Object> message = new HashMap<>();
         if(messageStorage == null){
@@ -101,7 +99,10 @@ public class CommonServiceImpl implements CommonService {
         return message;
     }
 
-    @Override
+    /**
+     * Message Strorage 생성
+     * @param message
+     */
     public synchronized void loadMessage(Map<String, Object> message) {
         if(logger.isDebugEnabled()){
             logger.debug("Load Message Storage Cache!!!");
@@ -121,25 +122,30 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 파라미터의 메시지코드에 대한 메시지를 리턴
+     * @param code
+     * @return
      */
-    @Override
     public String getMessage(String code) {
         return (String)getMessageData().get(code);
     }
 
     /**
-     * {@inheritDoc}
+     * 파라미터의 메시지코드에 대한 메시지를 리턴
+     * @param code
+     * @param arg
+     * @return
      */
-    @Override
     public String getMessage(String code, String arg) {
         return getMessage(code).replace("$", arg);
     }
 
     /**
-     * {@inheritDoc}
+     * 파라미터의 메시지코드에 대한 메시지를 리턴
+     * @param code
+     * @param args
+     * @return
      */
-    @Override
     public String getMessage(String code, List<String> args) {
         String msg = getMessage(code);
         for(int i=0; i<args.size(); i++){
@@ -150,17 +156,20 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 파라미터의 메시지코드에 대한 메시지를 리턴
+     * @param code
+     * @param args
+     * @return
      */
-    @Override
     public String getMessage(String code, String[] args) {
         return getMessage(code, Arrays.asList(args));
     }
 
     /**
-     * {@inheritDoc}
+     * 그리드 페이징리스트를 조회하는 공통 메서드
+     * @param model
+     * @return 페이징 리스트
      */
-    @Override
     public AjaxModel selectGridPagingList(AjaxModel model) {
         Map<String, Object> param = model.getData();
 
@@ -242,9 +251,9 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 접속, 기능에 대한 로그 저장
+     * @param model
      */
-    @Override
     public void saveAccessLog(AccessLogModel model) {
         if(isLogWrite(model)){
             daoFactory.getDao().insert("common.insertAccessLog", model);
@@ -252,9 +261,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 리스트를 조회하는 공통 메서드
+     * @param model
+     * @return List
      */
-    @Override
     public AjaxModel selectList(AjaxModel model) {
         Map param = model.getData();
 
@@ -276,9 +286,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 단일행을 조회하는 공통 메서드
+     * @param model
+     * @return Object
      */
-    @Override
     public AjaxModel select(AjaxModel model) {
         Map param = model.getData();
 
@@ -300,18 +311,20 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 공통코드를 조회
+     * @param model
+     * @return List
      */
-    @Override
     public AjaxModel selectCommCode(AjaxModel model) {
         model.setDataList(daoFactory.getDao().<Map<String, Object>>list("common.selectCommCode", model.getData()));
         return model;
     }
 
     /**
-     * {@inheritDoc}
+     * 공통코드를 조회 ( combo 용)
+     * @param model
+     * @return List
      */
-    @Override
     public AjaxModel selectCommCodeForCombo(AjaxModel model) {
         model.setDataList(daoFactory.getDao().<Map<String, Object>>list("common.selectCommCodeForCombo", model.getData()));
         return model;
@@ -320,16 +333,17 @@ public class CommonServiceImpl implements CommonService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public AjaxModel selectCommCodesForCombos(AjaxModel model) {
         model.setDataList(daoFactory.getDao().<Map<String, Object>>list("common.selectCommCodesForCombos", model.getData()));
         return model;
     }
 
     /**
-     * {@inheritDoc}
+     * 그리드 엑셀 다운로드
+     * @param params
+     * @param request
+     *@param response  @throws Exception
      */
-    @Override
     public void excelDownload(String params, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(URLDecoder.decode(params, StandardCharsets.UTF_8.toString()));
@@ -389,9 +403,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * Delete 쿼리를 실행하는 공통 메서드
+     * @param model (qKey 필수)
+     * @return
      */
-    @Override
     public AjaxModel delete(AjaxModel model) {
         List<Map<String, Object>> dataList = model.getDataList();
 
@@ -426,9 +441,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * Insert 쿼리를 실행하는 공통 메서드
+     * @param model (qKey 필수)
+     * @return
      */
-    @Override
     public AjaxModel insert(AjaxModel model) {
         Map<String, Object> param = model.getData();
         // 필수 쿼리 아이디 체크
@@ -450,9 +466,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * Update 쿼리를 실행하는 공통 메서드
+     * @param model (qKey 필수)
+     * @return
      */
-    @Override
     public AjaxModel update(AjaxModel model) {
         Map<String, Object> param = model.getData();
         // 필수 쿼리 아이디 체크
@@ -474,9 +491,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 메일 전송
+     * @param vo ( MAIL_FILE, TITLE, SENDER, RECEIVER, CC)
+     * @throws Exception
      */
-    @Override
     public void sendEMail(Map mailInfo) throws Exception {
         String AUTHENTICATION = "N";
         String MAIL_ENCODING  = mailSender.getDefaultEncoding();
@@ -554,9 +572,13 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 받는사람이 한명일때 간단하게 메일전송
+     * @param receiver 받는사람메일 주소
+     * @param title 메일 제목
+     * @param vmName 메일포멧 Velocity 파일명
+     * @param vmParam Velocity 파라미터
+     * @throws Exception
      */
-    @Override
     public void sendSimpleEMail(String receiver, String title, String vmName, Map vmParam) throws Exception {
         Map<String, String> senderMap = new HashMap<>();
         senderMap.put("NAME"   , "KTNET");
@@ -575,9 +597,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * Ajax의 dataList의 데이터를 data의 qKey를 실행하여 삭제하는 공통 메서드
+     * @param model (qKey 필수)
+     * @return
      */
-    @Override
     public AjaxModel deleteList(AjaxModel model) {
         Map<String, Object> param = model.getData();
 
@@ -611,18 +634,21 @@ public class CommonServiceImpl implements CommonService {
         return model;
     }
 
-    /**
-     * {@inheritDoc}
+    /***
+     * 접속IP권한체크
+     * @param userId
+     * @return
      */
-    @Override
     public List<String> selectUserIpAccess(String userId) {
         return daoFactory.getDao().list("common.selectUserIpAccess", userId);
     }
 
     /**
-     * {@inheritDoc}
+     * 사이트별 User session 을 반환
+     * (사용자 or 어드민)
+     * @param request
+     * @return
      */
-    @Override
     public UserSessionModel getUesrSessionModel(HttpServletRequest request) {
         String sessionDiv = request.getHeader("sessiondiv"); // ajax 용
         if(sessionDiv == null) sessionDiv = request.getParameter("MENU_DIV");   // 메뉴 용
@@ -650,11 +676,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 로그 제외 여부
      * @param model
      * @return
      */
-    @Override
     public boolean isLogWrite(AccessLogModel model) {
         if(logMngList == null){
             loadLogMngModel();
@@ -716,7 +741,6 @@ public class CommonServiceImpl implements CommonService {
         logMngList = daoFactory.getDao().list("log.selectCmmLogMngList");
     }
 
-    @Override
     public AjaxModel selectCmmLogTest(AjaxModel model) throws SQLException {
         Map<String, Object> param = model.getData();
         List<String> exclude = Arrays.asList("titleParameter", "ACTION_MENU_ID", "ACTION_MENU_NM", "ACTION_MENU_DIV", "ACTION_NM", "qKey", "dbPoolName", "PAGE_INDEX", "PAGE_ROW", "sessionDiv");
@@ -795,10 +819,10 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * {@inheritDoc}
+     * 사용자 index 화면로드시 조회
      * @param model
+     * @return
      */
-    @Override
     public AjaxModel selectIndexLoad(AjaxModel model) {
         Map<String, Object> retMap = new HashMap<>();
 
@@ -821,12 +845,12 @@ public class CommonServiceImpl implements CommonService {
 
         return model;
     }
-    
+
     /**
-     * {@inheritDoc}
+     * 업무 테이블별 저장일련번호 생성
      * @param docNm
+     * @return
      */
-    @Override
 	public Map<String,String> createDocId(String docNm) {
 		Map<String,String> rtn = new HashMap<String,String>();
 		rtn.put("DOCNM", docNm);
@@ -840,20 +864,11 @@ public class CommonServiceImpl implements CommonService {
 	}
 	
     /**
-     * {@inheritDoc}
-     * @param docNm
-     */
-    @Override
-	public void createDocNm(String docNm) throws Exception {
-		daoFactory.getDao().insert("common.insertDocId", docNm);
-	}
-
-    /**
-     * {@inheritDoc}
+     * 세션정보 셋팅
+     * @param userSessionModel
      * @param map
      * @throws Exception
      */
-    @Override
     public void addUsrIinfoToMap(UserSessionModel userSessionModel, Map map) throws Exception {
         Map<String, String> tempMap = BeanUtils.describe(userSessionModel);
 

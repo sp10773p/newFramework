@@ -10,9 +10,9 @@
 <html>
 <head>
     <%@ include file="/WEB-INF/include/include-main-define.jspf" %>
-
+    <%--<s:eval expression="@config.getProperty('login.action.url')" var="actionUrl"/>--%>
     <script>
-        var saveIdKey = "ucssystemAdminId";
+        var saveIdKey = "NEW_FRAMEWORK_SAVE_ID";
 
         $(function(){
             $('#userId').on('keypress', function(event) {
@@ -29,14 +29,16 @@
             });
 
             $('#btnLogin').on('click', function(event) {
-                if ($.trim($('#userId').val()) === '') {
+                var e = $('#userId');
+                if ($.trim(e.val()) === '') {
                     alert($.comm.getMessage("W00000067")); // 아이디를 입력해 주십시오.
-                    $('#userId').focus();
+                    e.focus();
                     return false;
                 }
-                if ($.trim($('#userPw').val()) === '') {
+                e = $('#userPw');
+                if ($.trim(e.val()) === '') {
                     alert($.comm.getMessage("W00000068")); // 비밀번호를 입력해 주십시오.
-                    $('#userPw').focus();
+                    e.focus();
                     return false;
                 }
                 loginAction();
@@ -68,9 +70,9 @@
 
         function loginAction() {
             fn_saveid();
-            $('#sessionDiv').val(Constant.ADM_SESSION_DIV);
-            $('form:first').submit();
-        }
+            $('form:first').attr('method', 'post');
+            $('form:first').attr('action', 'loginAction').submit();
+        }xt.xml
 
     </script>
 </head>
@@ -80,8 +82,7 @@
         <div class="box-header with-border">
             <h3 class="box-title" style="font-size: 30px;">Login</h3>
         </div>
-        <form class="form-horizontal" method="post" action="/loginAction">
-            <input type="hidden" id="sessionDiv" name="sessionDiv">
+        <form class="form-horizontal">
             <div class="box-body">
                 <div class="form-group">
                     <label for="userId" class="col-sm-3 control-label">아이디</label>

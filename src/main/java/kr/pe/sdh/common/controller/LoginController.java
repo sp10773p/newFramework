@@ -3,9 +3,9 @@ package kr.pe.sdh.common.controller;
 import kr.pe.sdh.common.service.UserService;
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.model.AccessLogModel;
-import kr.pe.sdh.core.model.UserSessionModel;
-import kr.pe.sdh.core.service.CommonService;
-import kr.pe.sdh.core.service.MenuService;
+import kr.pe.sdh.common.model.UserSessionModel;
+import kr.pe.sdh.common.service.CommonService;
+import kr.pe.sdh.common.service.MenuService;
 import kr.pe.sdh.core.util.DateUtil;
 import kr.pe.sdh.core.util.KeyGen;
 import kr.pe.sdh.core.util.Sha256;
@@ -54,48 +54,18 @@ public class LoginController {
 	@Resource(name = "menuService")
 	private MenuService menuService;
 
-	@Value("#{config['login.admin.ipcheck']}")
-	private boolean isAdminIpCheck;
-
-	/**
-	 * 어드민 사이트 접속 화면 이동
-	 * @param request
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/adminLogin")
-	public ModelAndView adminLogin(HttpServletRequest request) throws Exception {
-		ModelAndView mnv = new ModelAndView();
-		mnv.setViewName("login/adminLogin");
-
-		HttpSession session = request.getSession();
-
-		if(session.getAttribute(Constant.SESSION_KEY_ADM.getCode()) != null){
-			request.setAttribute("sessionDiv", Constant.ADM_SESSION_DIV.getCode());
-			mnv.setViewName(String.format("forward:%s", "main/adminMain"));
-			return mnv;
-		}
-
-		saveAccessLog(request, Constant.ADM_SESSION_DIV.getCode(), "어드민사이트 접속");
-
-		return mnv;
-	}
-
 	/**
 	 * 로그인 처리
 	 * @param userId
 	 * @param userPw
-	 * @param sessionDiv
 	 * @param request
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/loginAction")
-	public ModelAndView loginAction(@RequestParam(value = "userId") String userId,
-									@RequestParam(value = "userPw") String userPw,
-									@RequestParam(value = "sessionDiv") String sessionDiv, HttpServletRequest request) throws Exception {
+	public ModelAndView loginAction(@RequestParam(value = "userId") String userId, @RequestParam(value = "userPw") String userPw, HttpServletRequest request) throws Exception {
 
-		UserSessionModel userSessionModel = userService.selectUserSessionInfo(userId, sessionDiv);
+		UserSessionModel userSessionModel = userService.selectUserSessionInfo(userId);
 
 		ModelAndView mnv = new ModelAndView();
 		AccessLogModel accessLogModel = new AccessLogModel();
@@ -125,10 +95,10 @@ public class LoginController {
 			msg = commonService.getMessage("W00000022"); // 사용할 수 있는 메뉴가 없습니다. \n권한이나 접속한 사이트를 확인 하세요.
 
 			// IP접속허용체크
-		}else if("M".equals(sessionDiv) && isAdminIpCheck && !checkIpMatching(userId, ip)){
+		}/*else if("M".equals(sessionDiv) && isAdminIpCheck && !checkIpMatching(userId, ip)){
 			msg = commonService.getMessage("W00000038"); // IP 접속권한이 없습니다.
 
-		}
+		}*/
 
 		if(msg == null) {
 			userSessionModel.setLoginError(0);
@@ -144,14 +114,7 @@ public class LoginController {
 
 			userSessionModel.setUserIp(ip);
 			HttpSession session = request.getSession(true);
-
-			if (Constant.USR_SESSION_DIV.getCode().equals(sessionDiv)) {
-				session.setAttribute(Constant.SESSION_KEY_USR.getCode(), userSessionModel);
-
-			} else if (Constant.ADM_SESSION_DIV.getCode().equals(sessionDiv)) {
-				session.setAttribute(Constant.SESSION_KEY_ADM.getCode(), userSessionModel);
-
-			}
+			session.setAttribute(Constant.SESSION_KEY_USR.getCode(), userSessionModel);
 
 			accessLogModel.setRmk("로그인 성공");
 		}else{
@@ -159,14 +122,14 @@ public class LoginController {
 			mnv.addObject("userPw" , userPw);
 			mnv.addObject("msg"    , msg);
 
-			mnv.setViewName("login/adminLogin");
+			mnv.setViewName("login/login");
 
 			accessLogModel.setRmk("로그인 실패[" + msg + "]");
 		}
 
 		accessLogModel.setSid(KeyGen.getRandomTimeKey());
 		accessLogModel.setSessionId(request.getSession().getId());
-		accessLogModel.setLogDiv(sessionDiv);
+		accessLogModel.setLogDiv(Constant.USR_SESSION_DIV.getCode());
 		accessLogModel.setLoginIp(ip);
 		accessLogModel.setScreenId("LOGIN");
 		accessLogModel.setScreenNm("로그인");
