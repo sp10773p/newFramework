@@ -19,10 +19,12 @@
         <context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation" />
     </context:component-scan>
 
+    <mvc:resources mapping="/css/**" location="/css/"/>
+    <mvc:resources mapping="/images/**" location="/images/"/>
+    <mvc:resources mapping="/img/**" location="/img/"/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
+
     <mvc:annotation-driven>
-        <mvc:argument-resolvers>
-            <bean class="kr.pe.sdh.core.base.AjaxModelArgumentResolver"/>
-        </mvc:argument-resolvers>
         <mvc:message-converters>
             <!-- @ResponseBody로 String 처리할때 한글처리 -->
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -80,7 +82,7 @@
     </mvc:interceptors>-->
 
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />
+    <!--<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />-->
 
     <!-- ============================== -->
     <!-- Spring Framework View Resolver -->

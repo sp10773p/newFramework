@@ -20,8 +20,6 @@
                 $.comm.setGlobalVar(data['dataList']);
                 drawMenu(data['dataList']);
             })
-
-
         })
 
         function drawMenu(menuList){

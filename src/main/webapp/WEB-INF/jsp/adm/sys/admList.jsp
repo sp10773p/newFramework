@@ -12,7 +12,6 @@
     <%@ include file="/WEB-INF/include/include-header.jspf" %>
     <script>
         $(function () {
-            //Date range picker
             var headers = [
                 {"HEAD_TEXT": "사용자ID"       , "WIDTH": "100", "FIELD_NAME": "USER_ID", "LINK": "fn_detail"},
                 {"HEAD_TEXT": "사용자구분"     , "WIDTH": "80" , "FIELD_NAME": "USER_DIV_NM"},
@@ -34,7 +33,7 @@
                 "actNm"             : "사용자 조회",
                 "targetLayer"       : "gridLayer",
                 "qKey"              : "usr.selectUsrList",
-                "requestUrl"        : "/usr/selectUsrList.do",
+                "requestUrl"        : "/usr/selectUsrList",
                 "headers"           : headers,
                 "paramsFormId"      : "searchForm",
                 "gridNaviId"        : "gridPagingLayer",
@@ -54,7 +53,7 @@
 <%-- Search Area--%>
 <div class="box box-info">
     <div class="box-header with-border">
-        <h3 class="box-title"><button type="button" class="btn btn-block btn-info btn-sm" style="width: 120px;">Search</button></h3>
+        <h3 class="box-title"><button type="button" class="btn btn-block btn-info btn-sm" style="width: 120px;" id="btnSearch">Search</button></h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="" data-original-title="Collapse" style="float:right;">
                 <i class="fa fa-minus"></i>

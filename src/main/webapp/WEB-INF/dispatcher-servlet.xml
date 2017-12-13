@@ -82,7 +82,7 @@
     </mvc:interceptors>-->
 
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
-    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />
+    <!--<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />-->
 
     <!-- ============================== -->
     <!-- Spring Framework View Resolver -->

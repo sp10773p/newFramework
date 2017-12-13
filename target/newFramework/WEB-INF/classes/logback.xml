@@ -34,15 +34,7 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
-    <logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 

@@ -17,6 +17,7 @@
                         $.ajax({
                             type: 'POST',
                             url: url,
+                            contentType : "application/json; charset=UTF-8",
                             dataType: 'json',
                             cache: false,
                             async: $.type(async) === 'undefined' || $.type(async) === 'null' ? true : async,
