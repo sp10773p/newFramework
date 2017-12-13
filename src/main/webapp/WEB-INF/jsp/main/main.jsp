@@ -12,9 +12,14 @@
     <%@ include file="/WEB-INF/include/include-main-define.jspf" %>
     <script>
         $(function(){
+
             var url = "jspView.do?jsp=adm/sys/admList";
-            $('.content').load(url);
+            $('#contentFrame').attr('src', url);
         })
+
+        function resizeTopIframe(dynheight) {
+            $("#contentFrame").height(parseInt(dynheight) + 10);
+        }
     </script>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -40,7 +45,7 @@
 
             <%-- Main Content --%>
             <section class="content">
-
+                <iframe src="" id="contentFrame" style="width: 100%;height: 100%;border: 0px;" scrolling="no" onload=""></iframe>
             </section>
         </div>
         <!-- /.content-wrapper -->
