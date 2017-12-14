@@ -791,7 +791,6 @@
                 d.data["ACTION_NM"] = actNm;
             }
 
-            // return encodeURIComponent((JSON.stringify(d)).split("null").join(''));
             return (JSON.stringify(d)).split("null").join('');
         },
         /***

@@ -2,7 +2,6 @@ package kr.pe.sdh.common.controller;
 
 import kr.pe.sdh.common.service.CommonService;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.core.model.TestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
