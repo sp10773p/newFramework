@@ -21,12 +21,12 @@
                             dataType: 'json',
                             cache: false,
                             async: $.type(async) === 'undefined' || $.type(async) === 'null' ? true : async,
-                            processData: false,
-                            enctype: 'multipart/form-data',
+                            // processData: false,
+                            // enctype: 'multipart/form-data',
                             data: (isAjaxConvert == true ? data : $.comm.getAjaxData(data, actionNm)),
                             beforeSend: function (xhr) {
-                                xhr.setRequestHeader("ACTION_MENU_ID"      , $.page.getMenuId());
-                                $.comm.wait(true);
+                                //xhr.setRequestHeader("ACTION_MENU_ID"      , $.page.getMenuId());
+                                //$.comm.wait(true);
                             },
                             successCallback: successCallback,
                             errorCallback: errorCallback,
@@ -791,7 +791,8 @@
                 d.data["ACTION_NM"] = actNm;
             }
 
-            return encodeURIComponent((JSON.stringify(d)).split("null").join(''));
+            // return encodeURIComponent((JSON.stringify(d)).split("null").join(''));
+            return (JSON.stringify(d)).split("null").join('');
         },
         /***
          * 메시지 코드로 메시지를 호출

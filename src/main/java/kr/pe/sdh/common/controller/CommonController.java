@@ -2,10 +2,9 @@ package kr.pe.sdh.common.controller;
 
 import kr.pe.sdh.common.service.CommonService;
 import kr.pe.sdh.core.model.AjaxModel;
-import org.apache.commons.lang.StringUtils;
+import kr.pe.sdh.core.model.TestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 /**
  * 공통 처리 Controller
@@ -85,7 +83,8 @@ public class CommonController implements ApplicationListener<ContextRefreshedEve
     @RequestMapping(value = "/common/selectList")
     @ResponseBody
     public AjaxModel selectList(@RequestBody AjaxModel model) {
-        return commonService.selectList(model);
+        System.out.println(model);
+        return model;
     }
 
     /**

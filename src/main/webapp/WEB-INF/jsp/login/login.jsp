@@ -44,6 +44,32 @@
                 loginAction();
             });
 
+            var json = {
+                'data' : {
+                    '1' : '1',
+                    '2' : '2',
+                    '3' : '3'
+                }
+            };
+            $('#btnLogin2').on('click', function(event) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'common/selectList',
+                    contentType : "application/json; charset=UTF-8",
+                    dataType: 'json',
+                    data: JSON.stringify(json),
+                    success: function (data, status) {
+                        console.log(data);
+                    },
+                    complete:function(){
+                        $.comm.wait(false);
+                    },
+                    error: function (request,status,error) {
+                            console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                        }
+                });
+            });
+
             if(!$.comm.isNull('${msg}')){
                 alert('${msg}');
             }
@@ -72,7 +98,7 @@
             fn_saveid();
             $('form:first').attr('method', 'post');
             $('form:first').attr('action', 'loginAction').submit();
-        }xt.xml
+        }
 
     </script>
 </head>
@@ -109,6 +135,7 @@
             <!-- /.box-body -->
             <div class="box-footer" style="text-align: center;">
                 <button type="submit" class="btn btn-info" id="btnLogin">로그인</button>
+                <button type="button" class="btn btn-info" id="btnLogin2">로그인2</button>
             </div>
             <!-- /.box-footer -->
         </form>

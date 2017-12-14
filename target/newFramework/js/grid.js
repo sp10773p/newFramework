@@ -46,6 +46,7 @@ GridWrapper = function (params) {
     this.tableClass  = (params.tableClass  ? params.tableClass  : "tableList lineR");
     this.pagingClass = (params.pagingClass ? params.pagingClass : "paging");
     this.fontSize = "13px";
+    this.checkboxCss = "height: 15px;";
 
     // 그리드 부속 display 여부
     this.displayNone = (params.displayNone ? params.displayNone : []);
@@ -60,7 +61,7 @@ GridWrapper = function (params) {
     this.bodyTableId   = this.id + "_table";
 
     // 소팅
-    this.sortType = (params.sortType ? params.sortType : "multi"); // multi or sing
+    this.sortType = (params.sortType ? params.sortType : "multi"); // multi or single
     this.defaultSort = params.defaultSort;
     this.sortColInfo = [];
 
@@ -691,6 +692,7 @@ GridWrapper.prototype = {
             check.attr("id"   , this.checkId+(index+rowIdx));
             check.attr("name" , this.checkId);
             check.attr("value", index+rowIdx);
+            check.attr("style", this.checkboxCss);
 
             if(value["CHK"] && (value["CHK"] == "1" || value["CHK"] == "Y")){
                 check.prop("checked", true);

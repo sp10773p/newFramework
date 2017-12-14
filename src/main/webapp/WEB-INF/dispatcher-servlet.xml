@@ -26,14 +26,7 @@
 
     <mvc:annotation-driven>
         <mvc:message-converters>
-            <!-- @ResponseBody로 String 처리할때 한글처리 -->
-            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
-                <property name="supportedMediaTypes">
-                    <list>
-                        <value>text/html;charset=UTF-8</value>
-                    </list>
-                </property>
-            </bean>
+            <bean class="org.springframework.http.converter.json.GsonHttpMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
 
@@ -81,8 +74,8 @@
         </mvc:interceptor>
     </mvc:interceptors>-->
 
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
-    <!--<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />-->
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0" />-->
 
     <!-- ============================== -->
     <!-- Spring Framework View Resolver -->

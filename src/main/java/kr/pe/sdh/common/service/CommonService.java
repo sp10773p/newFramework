@@ -2,20 +2,17 @@ package kr.pe.sdh.common.service;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import kr.pe.sdh.common.model.LogMngModel;
+import kr.pe.sdh.common.model.UserSessionModel;
 import kr.pe.sdh.core.base.Constant;
 import kr.pe.sdh.core.dao.AbstractDAO;
 import kr.pe.sdh.core.dao.CommonDAOFactory;
-import kr.pe.sdh.core.excel.ExcelWriter;
 import kr.pe.sdh.core.model.AccessLogModel;
 import kr.pe.sdh.core.model.AjaxModel;
-import kr.pe.sdh.common.model.LogMngModel;
-import kr.pe.sdh.common.model.UserSessionModel;
 import kr.pe.sdh.core.util.DateUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.mybatis.spring.MyBatisSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +27,7 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.*;
@@ -345,7 +339,7 @@ public class CommonService {
      *@param response  @throws Exception
      */
     public void excelDownload(String params, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        JSONParser parser = new JSONParser();
+        /*JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(URLDecoder.decode(params, StandardCharsets.UTF_8.toString()));
 
         // 필수 쿼리 아이디 체크
@@ -399,7 +393,7 @@ public class CommonService {
         }catch(Exception e){
             logger.error("excelDownload Error : {}", e);
             throw e;
-        }
+        }*/
     }
 
     /**

@@ -57,7 +57,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/selectUsrList")
+    @RequestMapping(value = "/user/selectUserList")
     @ResponseBody
     public AjaxModel selectUsrList(@RequestBody AjaxModel model) throws Exception{
         return userService.selectUsrList(model);
@@ -69,7 +69,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/selectUsr")
+    @RequestMapping(value = "/user/selectUser")
     @ResponseBody
     public AjaxModel selectUsr(@RequestBody AjaxModel model) throws Exception{
         return userService.selectUsr(model);
@@ -81,7 +81,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/saveUser")
+    @RequestMapping(value = "/user/saveUser")
     @ResponseBody
     public AjaxModel saveUser(@RequestBody AjaxModel model) throws Exception {
         return userService.saveUser(model);
@@ -93,7 +93,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/initPass")
+    @RequestMapping(value = "/user/initPass")
     @ResponseBody
     public AjaxModel saveInitPass(@RequestBody AjaxModel model) throws Exception {
         return userService.saveInitPass(model);
@@ -105,7 +105,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/saveUserApprove")
+    @RequestMapping(value = "/user/saveUserApprove")
     @ResponseBody
     public AjaxModel saveUserApprove(@RequestBody AjaxModel model) throws Exception {
         return userService.saveUserApprove(model);
@@ -117,7 +117,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/userDrop")
+    @RequestMapping(value = "/user/userDrop")
     @ResponseBody
     public AjaxModel userDrop(@RequestBody AjaxModel model) throws Exception {
         return userService.saveUserDrop(model);
@@ -130,7 +130,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/deleteUser")
+    @RequestMapping(value = "/user/deleteUser")
     @ResponseBody
     public AjaxModel deleteUser(@RequestBody AjaxModel model) {
         return userService.deleteUser(model);
@@ -143,7 +143,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/createWebAccessKey")
+    @RequestMapping(value = "/user/createWebAccessKey")
     @ResponseBody
     public AjaxModel createWebAccessKey(HttpServletRequest request, @RequestParam("userId") String userId) {
         AjaxModel model = new AjaxModel();
@@ -168,7 +168,7 @@ public class UserController {
      * @param request
      * @throws Exception
      */
-    @RequestMapping(value = "/usr/userWebSite")
+    @RequestMapping(value = "/user/userWebSite")
     public ModelAndView userWebSite(HttpServletRequest request,
                                         @RequestParam(value = "userId", required = false) String userId,
                                         @RequestParam(value = "key", required = false) String key) throws Exception {

@@ -64,7 +64,7 @@
     overflow: auto;
     height: 100%;
     padding: 0px;
-    margin: 0px;
+    margin: 0px;;
 }
 
 .table_wrapper > table {
@@ -74,6 +74,9 @@
     border-spacing:0;
     border: none;
     table-layout: fixed;
+    font-size : 13px;
+    font-style : normal;
+    font-family: "돋움", Dotum, Arial, sans-serif;
 }
 
 .table_wrapper > table thead tr {
@@ -125,6 +128,9 @@
     vertical-align: middle;
     padding-top: 0px;
     white-space: nowrap;
+    font-size : 13px;
+    font-style : normal;
+    font-family: "돋움", Dotum, Arial, sans-serif;
 }
 
 .table_wrapper > table thead th:first-child .th_text {

@@ -32,8 +32,8 @@
             var gridWrapper = new GridWrapper({
                 "actNm"             : "사용자 조회",
                 "targetLayer"       : "gridLayer",
-                "qKey"              : "usr.selectUsrList",
-                "requestUrl"        : "/usr/selectUsrList",
+                "qKey"              : "user.selectUserList",
+                "requestUrl"        : "/user/selectUserList",
                 "headers"           : headers,
                 "paramsFormId"      : "searchForm",
                 "gridNaviId"        : "gridPagingLayer",
@@ -49,7 +49,8 @@
         })
     </script>
 </head>
-<body>
+<body class="hold-transition skin-blue sidebar-mini" style="background: transparent">
+<section class="content">
 <%-- Search Area--%>
 <div class="box box-info">
     <div class="box-header with-border">
@@ -68,8 +69,8 @@
                         <label for="F_REG_DTM" class="col-sm-4">가입신청일</label><label for="T_REG_DTM" style="display: none;">가입신청일</label>
                         <div class="col-sm-8 dateSearch">
                             <%--<input type="text" class="form-control" id="REG_DTM">--%>
-                            <input type="text" id="F_REG_DTM" name="F_REG_DTM" <attr:datefield to="T_REG_DTM"/>><span>~</span>
-                            <input type="text" id="T_REG_DTM" name="T_REG_DTM" <attr:datefield/> >
+                            <input class="form-control" type="text" id="F_REG_DTM" name="F_REG_DTM" <attr:datefield to="T_REG_DTM"/>><span>~</span>
+                            <input class="form-control" type="text" id="T_REG_DTM" name="T_REG_DTM" <attr:datefield/> >
                         </div>
                     </div>
                 </div>
@@ -77,7 +78,7 @@
                     <div class="form-group">
                         <label for="USER_STATUS" class="col-sm-4">가입상태</label>
                         <div class="col-sm-8">
-                            <select class="w143" id="USER_STATUS" name="USER_STATUS">
+                            <select class="form-control w143" id="USER_STATUS" name="USER_STATUS">
                                 <option value="">전체</option>
                                 <option value="A">가입요청</option>
                                 <option value="B">가입승인</option>
@@ -92,7 +93,7 @@
                     <div class="form-group">
                         <label for="USE_CHK" class="col-sm-4">사용여부</label>
                         <div class="col-sm-8">
-                            <select class="w143" id="USE_CHK" name="USE_CHK">
+                            <select class="form-control w143" id="USE_CHK" name="USE_CHK">
                                 <option value="">선택</option>
                                 <option value="Y">사용</option>
                                 <option value="N">미사용</option>
@@ -106,7 +107,7 @@
                     <div class="form-group">
                         <label for="SEARCH_TXT" class="col-sm-4">검색조건</label><label for="SEARCH_COL" style="display: none;">검색조건</label>
                         <div class="col-sm-8">
-                            <select id="SEARCH_COL" name="SEARCH_COL" class="w120">
+                            <select id="SEARCH_COL" name="SEARCH_COL" class="form-control w120" <attr:changeNoSearch/> >
                                 <option value="BIZ_NO" selected="">사업자등록번호</option>
                                 <option value="USER_ID">사용자ID</option>
                                 <option value="USER_NM">사용자명</option>
@@ -119,7 +120,7 @@
                     <div class="form-group">
                         <label for="USER_DIV" class="col-sm-4">사용자구분</label>
                         <div class="col-sm-8">
-                            <select id="USER_DIV" name="USER_DIV" class="w143">
+                            <select id="USER_DIV" name="USER_DIV" class="form-control w143">
                                 <option value="">선택</option>
                             </select>
                         </div>
@@ -135,7 +136,7 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title"><%--Hover Data Table--%></h3>
+                <h3 class="box-title">사용자 목록</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-block btn-info btn-sm" style="width: 120px;">Excel</button>
                 </div>
@@ -148,5 +149,6 @@
     </div>
 </div>
 <!-- /.row -->
+</section> <%-- /.content --%>
 </body>
 </html>

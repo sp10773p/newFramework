@@ -15,6 +15,8 @@
 
             var url = "jspView.do?jsp=adm/sys/admList";
             $('#contentFrame').attr('src', url);
+            // $('.content').load(url);
+
         })
 
         function resizeTopIframe(dynheight) {
@@ -44,9 +46,8 @@
             </section>
 
             <%-- Main Content --%>
-            <section class="content">
-                <iframe src="" id="contentFrame" style="width: 100%;height: 100%;border: 0px;" scrolling="no" onload=""></iframe>
-            </section>
+
+            <iframe src="" id="contentFrame" style="width: 100%;height: 100%;border: 0px;" scrolling="no" onload=""></iframe>
         </div>
         <!-- /.content-wrapper -->
     </div>
