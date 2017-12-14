@@ -26,7 +26,7 @@
 
     <mvc:annotation-driven>
         <mvc:message-converters>
-            <bean class="org.springframework.http.converter.json.GsonHttpMessageConverter"/>
+            <bean class="kr.pe.sdh.core.base.AjaxGsonMessageConverter"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
 
